@@ -30,7 +30,7 @@ import os
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, Tuple
 
 import numpy as np
 
@@ -336,10 +336,3 @@ def format_duration(seconds):
         return "{} min {} s".format(minutes, rest)
     hours, minutes = divmod(minutes, 60)
     return "{} h {} min".format(hours, minutes)
-
-
-def parse_rebuild(names: Optional[list]):
-    """--rebuild-cache with no names means every item; with names, only those."""
-    if names is None:
-        return None
-    return True if len(names) == 0 else list(names)
