@@ -69,3 +69,11 @@ starts using it.
 - **Fill**: replacing each `X` inside a half with our last label in that half (or the first one at
   the start of a half), exactly as the scorer does before `spellF1`. Never across halftime. Not
   smoothing: fill changes no label we actually gave.
+- **Item**: one named, prepared input the Match gives an experiment, e.g. `ball_xy`. Per-frame
+  items have the frame as their first axis, length 199,319. Items are only ever added; a new format
+  is a new name. Built on first use and kept in the cache.
+- **Cache key**: `<item>__v<version>__<fingerprint>`, the name of an item's file in
+  `outputs/cache/`. The fingerprint hashes the committed checksums of the raw files and the keys of
+  the items it is built from, so any upstream change gives a new key.
+- **Track slot**: one of the 46 track columns of the ATD, each fixed to one side (`track_team`).
+  A slot holds a series of tracks over the match, not one player.
