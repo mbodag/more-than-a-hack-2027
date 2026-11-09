@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Match viewer</title>
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<header>
+  <strong id="title">Match viewer</strong>
+  <span id="clock" class="big">–</span>
+  <span id="frameInfo" class="dim"></span>
+  <span class="spacer"></span>
+  <span class="group" id="viewButtons">
+    <button data-view="both" class="on">Both</button>
+    <button data-view="video">Video</button>
+    <button data-view="pitch">Pitch</button>
+  </span>
+  <label><input type="checkbox" id="optOverlay" checked> Overlay</label>
+  <label><input type="checkbox" id="optNumbers"> Slot numbers</label>
+  <label><input type="checkbox" id="optLines"> Pitch lines</label>
+  <label title="The public 5 minutes. A pipeline sanity check only: never tune against it.">
+    <input type="checkbox" id="optTruth"> Ground truth (sanity check only)</label>
+</header>
+
+<main>
+  <section id="stage">
+    <div class="pane" id="videoPane">
+      <div class="box">
+        <video id="video" muted playsinline preload="metadata"></video>
+        <canvas id="overlay"></canvas>
+        <div id="videoMessage" class="message"></div>
+      </div>
+    </div>
+    <div class="pane" id="pitchPane">
+      <div class="box"><canvas id="pitch"></canvas></div>
+    </div>
+  </section>
+  <aside>
+    <h2>Labels</h2>
+    <div id="labels"></div>
+    <button id="loadButton">Load prediction CSVs…</button>
+    <input type="file" id="fileInput" accept=".csv" multiple hidden>
+    <p class="dim small">Or drop submission-format CSVs anywhere on the page.</p>
+    <h2>Tracking</h2>
+    <div id="tracking"></div>
+    <h2>Smart Tagging</h2>
+    <div id="tagging"></div>
+  </aside>
+</main>
+
+<footer>
+  <div id="controls">
+    <button id="half1" title="Jump to the first half">1st half</button>
+    <button id="half2" title="Jump to the second half">2nd half</button>
+    <button id="play" class="wide" title="Space">Play</button>
+    <select id="speed" title="Playback speed">
+      <option value="0.25">0.25×</option><option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option><option value="2">2×</option>
+      <option value="4">4×</option>
+    </select>
+    <label>Frame <input type="number" id="frameBox" min="0" step="1"></label>
+    <span class="group">
+      <button id="prevChange" title="Previous change">◀</button>
+      <select id="jumpSeries" title="What the two arrows jump between"></select>
+      <button id="nextChange" title="Next change">▶</button>
+    </span>
+    <label>Zoom
+      <select id="zoom">
+        <option value="20">20 s</option><option value="60" selected>1 min</option>
+        <option value="300">5 min</option>
+      </select>
+    </label>
+    <span class="spacer"></span>
+    <label class="dim" title="Shift the video against the data if the overlay runs early or late">
+      Video offset <input type="number" id="videoOffset" value="0" step="1"> frames</label>
+    <span class="dim small">space · ←/→ frame · shift ←/→ second</span>
+  </div>
+  <canvas id="detail"></canvas>
+  <canvas id="overview"></canvas>
+</footer>
+<div id="toast" hidden></div>
+
+<script src="meta.js"></script>
+<script src="core.js"></script>
+<script src="viewer.js"></script>
+</body>
+</html>
