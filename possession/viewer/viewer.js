@@ -484,6 +484,12 @@
 
   function updateSide(frame, ball) {
     var series = allSeries();
+    setHtml($("labelBar"), series.length ? series.map(function (s) {
+      var code = s.codes[frame], letter = code === Core.NO_LABEL ? null : Core.LABELS[code];
+      return "<span class=\"entry\"><span class=\"dim\">" + esc(s.name) + "</span>" +
+        chip(letter, letter ? letter + " · " + LABEL_NAME[letter] : "not labelled") + "</span>";
+    }).join("") : "<span class=\"dim small\">No prediction loaded: drop a submission CSV on " +
+                  "the page, or switch on the ground truth.</span>");
     setHtml($("labels"), series.length ? series.map(function (s) {
       var code = s.codes[frame], letter = code === Core.NO_LABEL ? null : Core.LABELS[code];
       return "<div class=\"row\">" + chip(letter, letter || "–") +
@@ -562,6 +568,7 @@
       return "<option value=\"" + o[0] + "\">" + esc(o[1]) + "</option>";
     }).join("");
     if (options.some(function (o) { return o[0] === keep; })) select.value = keep;
+    render(); // fills the label bar, whose height the layout then measures around
     layout();
   }
 
