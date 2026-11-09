@@ -1,6 +1,6 @@
 # 0002: How an experiment runs, from data files to a checked CSV
 
-- Status: proposed
+- Status: accepted
 - Date: 2026-11-09
 - Issue: #4
 
