@@ -58,3 +58,14 @@ starts using it.
 - **Homography**: one 3×3 matrix per frame mapping camera pixels to pitch coordinates.
 - **Tactical / broadcast**: the two recordings. Only tactical is aligned to the submission; we
   ignore broadcast for now.
+
+## Experiments
+
+- **Experiment**: one method for producing a label for every frame, named after the file that
+  holds it. Its result is one CSV with the same name. A variant with different settings is a
+  separate experiment.
+- **Submission experiment**: the experiment whose output we submit, `north_london_tactics`. It
+  only points at the chosen experiment.
+- **Fill**: replacing each `X` inside a half with our last label in that half (or the first one at
+  the start of a half), exactly as the scorer does before `spellF1`. Never across halftime. Not
+  smoothing: fill changes no label we actually gave.
