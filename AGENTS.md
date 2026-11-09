@@ -61,6 +61,7 @@ python scripts/check_data.py                             # data matches committe
 python evaluation/validate_submission.py <file>.csv      # before trusting any CSV
 python evaluation/run_evaluation.py                      # scores evaluation/results/*.csv on the public 5 min
 python starter/baseline.py                               # rebuilds the baselines (needs data)
+python -m possession.viz                                 # match viewer: open outputs/viewer/index.html (needs data)
 ```
 
 ## How we work
