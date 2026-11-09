@@ -138,6 +138,15 @@
       ". Showing the tracking as the camera would see it.";
     render();
   });
+  // The browser can pause or resume the video by itself (a hidden tab, a media key): follow it,
+  // so the Play button never claims playback that is not happening.
+  function followVideo() {
+    if (!state.videoOk || state.playing === !video.paused) return;
+    state.playing = !video.paused;
+    $("play").textContent = state.playing ? "Pause" : "Play";
+  }
+  video.addEventListener("pause", followVideo);
+  video.addEventListener("play", followVideo);
   if (hasFrameCallback) video.requestVideoFrameCallback(onVideoFrame);
 
   // Chunks ----------------------------------------------------------------------------------------
