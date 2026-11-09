@@ -49,6 +49,7 @@ stay clean.
 
 ```bash
 pip install -r requirements-starter.txt                  # numpy, pandas, kloppy, matplotlib
+python scripts/check_data.py                             # data matches committed SHA-256s; run before any experiment
 python evaluation/validate_submission.py <file>.csv      # before trusting any CSV
 python evaluation/run_evaluation.py                      # scores evaluation/results/*.csv on the public 5 min
 python starter/baseline.py                               # rebuilds the baselines (needs data)
@@ -73,6 +74,9 @@ python starter/baseline.py                               # rebuilds the baseline
 - **Hit an unsettled design decision?** Stop. Comment with the question, options and your
   recommendation; relabel `ready-for-human` + `blocked`; commit only work that doesn't depend on
   the answer. Never quietly pick an answer.
+- **Run `python scripts/check_data.py` before any experiment.** It exits non-zero if a data file
+  is missing or differs from the checksums in `scripts/data_checksums.json`. The experiment runner,
+  once it exists, must call `check_data()` itself.
 - **Experiments** are recorded in `experiments/` (see its README). Commit metrics, not CSVs. Only
   the final `<team_name>.csv` is ever committed.
 - **Method changes** update `docs/TECHNICAL.md` in the same PR.
