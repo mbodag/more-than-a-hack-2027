@@ -146,6 +146,18 @@ def test_main_returns_1_with_the_message(fake, capsys):
     assert "no experiment 'nope'" in capsys.readouterr().err
 
 
+def test_unknown_rebuild_item_is_a_clean_error(monkeypatch, capsys):
+    """A typo in --rebuild-cache exits 1 with the Match's message, not a traceback."""
+    def match(rebuild):
+        raise runner.CacheError("cannot rebuild trackng: no such item; have tracking")
+
+    monkeypatch.setattr(runner, "check_data", lambda: None)
+    monkeypatch.setattr(runner, "Match", match)
+    monkeypatch.setattr(runner, "list_experiments", lambda: ["demo"])
+    assert runner.main(["run", "demo", "--rebuild-cache", "trackng"]) == 1
+    assert "cannot rebuild trackng: no such item" in capsys.readouterr().err
+
+
 @pytest.mark.parametrize("argv, rebuild", [
     ([], None),
     (["--rebuild-cache"], True),

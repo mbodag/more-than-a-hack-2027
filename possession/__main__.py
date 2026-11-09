@@ -17,8 +17,10 @@ import sys
 import time
 
 from possession import REPO, checks, output
+from possession.cache import CacheError
 from possession.checks import RunError
 from possession.fill import fill
+from possession.match import Match
 
 sys.path.insert(0, os.path.join(REPO, "scripts"))
 import check_data as _check_data  # noqa: E402  (scripts/ is not a package)
@@ -50,12 +52,11 @@ def check_data():
 
 def make_match(rebuild):
     """Step 2. `rebuild` is None (use the cache), True (rebuild every item used) or a tuple of
-    item names to rebuild. The Match itself is issue #10."""
+    item names to rebuild. An unknown item name stops the run with the list of known ones."""
     try:
-        from possession.match import Match
-    except ImportError as error:
-        raise RunError("possession.match is not available yet (issue #10): {}".format(error))
-    return Match(rebuild=rebuild)
+        return Match(rebuild=rebuild)
+    except CacheError as error:
+        raise RunError(str(error))
 
 
 def run(experiment, rebuild=None, repo=REPO, say=print):
