@@ -35,11 +35,17 @@ _Where it fails, and what we would fix with more time._
 ## Reproduction
 
 ```bash
-pip install -r requirements.txt   # pinned versions
-python scripts/check_data.py      # the data matches the committed checksums (#2)
-# the single command that regenerates <team_name>.csv (#4)
-python evaluation/validate_submission.py <team_name>.csv
+pip install -r requirements.txt                            # pinned versions
+python scripts/check_data.py                               # the data matches the committed checksums (#2)
+python -m possession run north_london_tactics              # regenerates "North London Tactics.csv"
+python evaluation/validate_submission.py "North London Tactics.csv"
 ```
+
+`python -m possession run` checks the data itself and stops if it fails, runs the chosen
+experiment, fills each `X` inside a half from the labels around it (never across halftime), writes
+the CSV and checks it as read back from disk (ADR 0002). Add `--rebuild-cache` to rebuild every
+prepared input item instead of loading it from `outputs/cache/`; the result must be byte-identical
+either way.
 
 ## Pre-submission checklist
 
