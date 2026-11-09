@@ -43,7 +43,12 @@ python evaluation/validate_submission.py "North London Tactics.csv"
 
 `python -m possession run` checks the data itself and stops if it fails, runs the chosen
 experiment, fills each `X` inside a half from the labels around it (never across halftime), writes
-the CSV and checks it as read back from disk (ADR 0002). Add `--rebuild-cache` to rebuild every
+the CSV and checks it as read back from disk with the official format check (ADR 0002). It then
+prints a label-free proxy report for the graded halves (possessions, their lengths, label changes
+per minute, dead-ball and home shares, agreement with Smart Tagging's in-possession phases), with
+warnings for values outside provisional ranges, and saves it to
+`experiments/metrics/<experiment>.json`. For the submission it also runs the organisers'
+`evaluation/validate_submission.py` on the file. Only the format checks can fail a run. Add `--rebuild-cache` to rebuild every
 prepared input item instead of loading it from `outputs/cache/`; the result must be byte-identical
 either way.
 

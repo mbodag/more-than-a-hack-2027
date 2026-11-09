@@ -6,7 +6,7 @@
     python -m possession run north_london_tactics                  # the submission
 
 Steps: 1 check the data, 2 create the Match, 3 run the experiment, 4 check its output, 5 fill,
-6 write the CSV, 7 check the file on disk.
+6 write the CSV, 7 check the file on disk and report label-free proxy metrics.
 """
 
 import argparse
@@ -90,7 +90,16 @@ def run(experiment, rebuild=None, repo=REPO, say=print):
     output.write_csv(filled, path)
 
     say("7 · checking the file on disk")
-    checks.check_file(experiment, path)
+    table = checks.check_file(experiment, path)
+    say("    official format check passed")
+    side = checks.smart_tagging_side(match.smart_tagging_codes, match.smart_tagging_team)
+    report = checks.proxy_report(table["label"].astype(str).values, smart_tagging=side)
+    say(checks.format_report(report))
+    metrics = checks.write_metrics(experiment, report, repo)
+    say("    proxy report saved to {}".format(os.path.relpath(metrics, repo)))
+    if experiment == output.SUBMISSION_EXPERIMENT:
+        say("    python evaluation/validate_submission.py \"{}\"".format(output.SUBMISSION_FILE))
+        say(checks.run_official_validator(experiment, path).rstrip())
     say("done: {}".format(os.path.relpath(path, repo)))
     return path
 
