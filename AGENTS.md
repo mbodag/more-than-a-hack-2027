@@ -16,6 +16,14 @@ GitHub board and in issue comments, never here.**
 - Deadline: **17 November 2026**. Method frozen 15 November; 16 November is for the technical
   document and the reproducibility check.
 
+## Our team
+
+We are **North London Tactics**, the name registered with the organisers. It must match exactly
+(spaces and capitals included) in the submission form's Team Name field and in the deliverable
+file names, `North London Tactics.csv` and `North London Tactics.pdf` (or `.md`), because the
+scorer labels the board row with the CSV's file name (SUBMISSION.md). Quote the file name in shell
+commands.
+
 ## Hard rules (breaking one can disqualify us)
 
 1. **Never commit match data.** This repo is public and the data is not redistributable. `data/` is
@@ -78,6 +86,6 @@ python starter/baseline.py                               # rebuilds the baseline
   is missing or differs from the checksums in `scripts/data_checksums.json`. The experiment runner,
   once it exists, must call `check_data()` itself.
 - **Experiments** are recorded in `experiments/` (see its README). Commit metrics, not CSVs. Only
-  the final `<team_name>.csv` is ever committed.
+  the final `North London Tactics.csv` is ever committed.
 - **Method changes** update `docs/TECHNICAL.md` in the same PR.
 - **Writing:** British English spelling.

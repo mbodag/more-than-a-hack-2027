@@ -1,5 +1,8 @@
 # More than a Hack 2027 — Phase 1: Ball Possession
 
+> **This fork is the entry of team North London Tactics.** Everything below is the organisers'
+> challenge description, kept unchanged; our working notes start at [AGENTS.md](AGENTS.md).
+
 **Organised by [Metrica Sports](https://metrica-sports.com), [FC Barcelona](https://www.fcbarcelona.com)
 and the [Mobile World Capital Barcelona](https://www.mwcbarcelona.com)**, at the Talent Arena in Barcelona.
 
