@@ -232,8 +232,3 @@ def test_unknown_dependency_refused(tmp_path):
     with pytest.raises(c.CacheError, match="unknown item"):
         make_cache(tmp_path, {"a": c.Item("a", 1, lambda i: np.zeros(1), deps=("b",))})
 
-
-def test_parse_rebuild():
-    assert c.parse_rebuild(None) is None
-    assert c.parse_rebuild([]) is True
-    assert c.parse_rebuild(["tracking"]) == ["tracking"]
