@@ -24,18 +24,19 @@
 </header>
 
 <main>
-  <section id="centre">
-    <div id="labelBar"></div>
-    <div id="stage">
-      <div class="pane" id="videoPane">
-        <div class="box">
-          <video id="video" muted playsinline preload="metadata"></video>
-          <canvas id="overlay"></canvas>
-          <div id="videoMessage" class="message"></div>
-        </div>
+  <section id="stage">
+    <div class="pane" id="videoPane">
+      <div class="box">
+        <video id="video" muted playsinline preload="metadata"></video>
+        <canvas id="overlay"></canvas>
+        <div id="videoMessage" class="message"></div>
+        <div class="onPicture" id="videoLabels"></div>
       </div>
-      <div class="pane" id="pitchPane">
-        <div class="box"><canvas id="pitch"></canvas></div>
+    </div>
+    <div class="pane" id="pitchPane">
+      <div class="box">
+        <canvas id="pitch"></canvas>
+        <div class="onPicture" id="pitchLabels"></div>
       </div>
     </div>
   </section>

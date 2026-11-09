@@ -484,12 +484,15 @@
 
   function updateSide(frame, ball) {
     var series = allSeries();
-    setHtml($("labelBar"), series.length ? series.map(function (s) {
+    // On the video when it is shown, otherwise on the pitch: one place, inside the picture.
+    var onPicture = series.map(function (s) {
       var code = s.codes[frame], letter = code === Core.NO_LABEL ? null : Core.LABELS[code];
-      return "<span class=\"entry\"><span class=\"dim\">" + esc(s.name) + "</span>" +
-        chip(letter, letter ? letter + " · " + LABEL_NAME[letter] : "not labelled") + "</span>";
-    }).join("") : "<span class=\"dim small\">No prediction loaded: drop a submission CSV on " +
-                  "the page, or switch on the ground truth.</span>");
+      return "<div class=\"entry\"><span class=\"name\">" + esc(s.name) + "</span>" +
+        chip(letter, letter ? letter + " · " + LABEL_NAME[letter] : "not labelled") + "</div>";
+    }).join("");
+    var onVideo = !$("videoPane").hidden;
+    setHtml($("videoLabels"), onVideo ? onPicture : "");
+    setHtml($("pitchLabels"), onVideo ? "" : onPicture);
     setHtml($("labels"), series.length ? series.map(function (s) {
       var code = s.codes[frame], letter = code === Core.NO_LABEL ? null : Core.LABELS[code];
       return "<div class=\"row\">" + chip(letter, letter || "–") +
