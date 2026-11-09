@@ -19,7 +19,9 @@ parallel sessions never edit the same file. Each record has:
 
 ## What gets committed
 
-- These Markdown records, and any small metric files the experiment runner generates.
+- These Markdown records, and `experiments/metrics/<experiment>.json`, the proxy report the
+  runner writes on every run (`python -m possession run <experiment>`, step 7). Its thresholds are
+  provisional until #5; a warning in it is a prompt to look, never a verdict.
 - **Never** experiment CSVs (they go in the gitignored `outputs/`). Only the final
   `<team_name>.csv` is committed.
 - **Never** a score against the public 5-minute ground truth used to choose between experiments.

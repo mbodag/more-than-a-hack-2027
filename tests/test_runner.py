@@ -1,7 +1,9 @@
 """Steps 4, 6 and 7 and the command itself, with a fake experiment and no match data."""
 
+import json
 import os
 import sys
+import types
 
 import numpy as np
 import pytest
@@ -54,7 +56,7 @@ def test_write_csv_overwrites_and_leaves_no_tmp(tmp_path):
     assert os.listdir(str(tmp_path / "outputs")) == ["x.csv"]
 
 
-# -- step 7 (until #12) ------------------------------------------------------------------------
+# -- step 7.1 -------------------------------------------------------------------------------
 
 def test_check_file_passes_a_written_csv(tmp_path):
     path = output.write_csv(["H", "A", "D", "X"], str(tmp_path / "a.csv"))
@@ -85,7 +87,10 @@ def fake(monkeypatch):
 
     def make_match(rebuild):
         calls["rebuild"].append(rebuild)
-        return object()
+        team = np.full((N_FRAMES, 1), "", dtype="<U1")
+        team[20000:30000, 0] = "H"
+        return types.SimpleNamespace(smart_tagging_codes=np.array(["BUILD UP"]),
+                                     smart_tagging_team=team)
 
     monkeypatch.setattr(runner, "check_data", check_data)
     monkeypatch.setattr(runner, "make_match", make_match)
@@ -169,3 +174,18 @@ def test_rebuild_cache_argument(argv, rebuild):
 
 def test_real_experiment_listing_runs():
     assert isinstance(runner.list_experiments(), list)
+
+
+def test_run_saves_the_proxy_report(fake, tmp_path):
+    runner.run("demo", repo=str(tmp_path), say=lambda *a: None)
+    record = json.load(open(str(tmp_path / "experiments" / "metrics" / "demo.json")))
+    assert record["experiment"] == "demo"
+    assert record["graded_frames"] == 79467 + 79390
+    assert record["smart_tagging"]["coverage"] == round(10000 / 158857.0, 4)
+
+
+def test_submission_runs_the_official_validator(fake, tmp_path):
+    said = []
+    runner.run("north_london_tactics", repo=str(tmp_path), say=said.append)
+    assert any("validate_submission.py" in line for line in said)
+    assert any(line.startswith("OK    North London Tactics.csv") for line in said)
