@@ -77,3 +77,13 @@ starts using it.
   the items it is built from, so any upstream change gives a new key.
 - **Track slot**: one of the 46 track columns of the ATD, each fixed to one side (`track_team`).
   A slot holds a series of tracks over the match, not one player.
+
+## Rule-based method (candidate, #5 option A)
+
+- **Control evidence**: on one frame, a side's nearest player is close enough to the ball to be
+  playing it, and the other side's nearest is clearly further away. Close to both is a challenge,
+  not evidence.
+- **Confirm**: the number of evidence frames in a row the other side needs before possession
+  changes. The hysteresis that stops deflections and duels flipping possession.
+- **Bridge**: carrying possession through a short stretch where the ball is not tracked. Longer
+  stretches are taken as dead ball.
