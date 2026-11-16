@@ -59,6 +59,18 @@ starts using it.
 - **Tactical / broadcast**: the two recordings. Only tactical is aligned to the submission; we
   ignore broadcast for now.
 
+## Other matches (ADR 0003)
+
+- **Other matches / IDSSE**: seven Bundesliga matches of open data with the DFL's own per-frame
+  ball status and possession, used as a full ground truth for judging methods. Never BAR-ATH.
+- **DFL labels**: `D` where the DFL says the ball is out of play, else its home/away possession.
+  The provider's definition, close to but not the same as ours.
+- **Degradation**: making clean tracking look like the ATD before scoring on it (`degrade.py`).
+  Version 1 hides the ball in runs drawn from the ATD's own gap lengths. A **seed** fixes one draw.
+- **Bench**: `python -m possession.bench`, an experiment scored with the official metrics on the
+  other matches. **Train** split picks settings, **validation** compares candidates, **test** is
+  touched once per candidate we intend to submit.
+
 ## Experiments
 
 - **Experiment**: one method for producing a label for every frame, named after the file that

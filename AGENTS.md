@@ -31,7 +31,8 @@ commands.
 2. **No hand annotation of the provided match**, for any purpose. Watching clips to debug is fine;
    writing down labels from them is not.
 3. **No tuning or training on the public 5-minute ground truth** (`evaluation/gt/`). It is a
-   pipeline sanity check only. Judge changes with label-free proxy metrics.
+   pipeline sanity check only. Judge changes on the bench of other matches (ADR 0003), plus
+   label-free proxy metrics on BAR-ATH.
 4. **No human-produced data about this match** (Opta, StatsBomb, etc.).
 5. **The submitted CSV must regenerate exactly** from this repo with one documented command.
 
@@ -43,6 +44,7 @@ commands.
 | `starter/` | organisers' loaders, baseline, notebooks | no: import, don't edit |
 | `evaluation/` | the official scorer and validator | no, never |
 | `data/` | gated match data, gitignored; or point `MTAH_DATA_DIR` elsewhere | never commit |
+| `data/external/idsse/` | the other matches (IDSSE, open data), from `scripts/fetch_idsse.py` | never commit |
 | `possession/` | our code | yes |
 | `scripts/` | our helper scripts (e.g. the data check) | yes |
 | `experiments/` | one results record per experiment; see its README | yes |
@@ -62,6 +64,10 @@ python evaluation/validate_submission.py <file>.csv      # before trusting any C
 python evaluation/run_evaluation.py                      # scores evaluation/results/*.csv on the public 5 min
 python starter/baseline.py                               # rebuilds the baselines (needs data)
 python -m possession.viz                                 # match viewer: open outputs/viewer/index.html (needs data)
+python scripts/fetch_idsse.py                            # the other matches with full ground truth (ADR 0003)
+python -m possession.bench train <experiment>            # pick its GRID settings on train, score on val
+python -m possession.bench val <experiment>              # score on validation (test: once per candidate)
+python -m possession.viz --external J03WOY --experiments <experiment>   # other match in the viewer
 ```
 
 ## How we work
@@ -84,8 +90,11 @@ python -m possession.viz                                 # match viewer: open ou
   recommendation; relabel `ready-for-human` + `blocked`; commit only work that doesn't depend on
   the answer. Never quietly pick an answer.
 - **Run `python scripts/check_data.py` before any experiment.** It exits non-zero if a data file
-  is missing or differs from the checksums in `scripts/data_checksums.json`. The experiment runner,
-  once it exists, must call `check_data()` itself.
+  is missing or differs from the checksums in `scripts/data_checksums.json`. The runner and the
+  bench call it themselves; the bench also checks the other matches (`scripts/idsse_checksums.json`).
+- **Bench splits are fixed** (`SPLITS` in `possession/external.py`, ADR 0003): fit on train,
+  compare on validation, and run test only once per candidate we intend to submit. Never move a
+  match between splits after seeing scores.
 - **Experiments** are recorded in `experiments/` (see its README). Commit metrics, not CSVs. Only
   the final `North London Tactics.csv` is ever committed.
 - **Method changes** update `docs/TECHNICAL.md` in the same PR.

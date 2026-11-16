@@ -23,6 +23,13 @@ _What we built, and why that rather than something else. To be filled once #5 de
 _Every labelled dataset used: source, who labelled it, how much. None from the provided game.
 Write "none" if the method uses no labels._
 
+- **IDSSE open Bundesliga data** (Bassek, Weber, Rein & Memmert, 2025, *Scientific Data*;
+  CC BY 4.0; figshare): seven full matches of the 2022/23 Bundesliga and 2. Bundesliga, about
+  1.0 million frames at 25 Hz. Labels are the DFL's own per-frame ball status and ball possession,
+  produced by the provider's data collection, not by us. Split into four training, one validation
+  and two test matches (ADR 0003). The tracking is degraded to look like the ATD before any
+  method sees it: the ball is hidden in runs drawn from the ATD's own gap lengths.
+
 ## Possession rules implemented
 
 _Where we drew the line on loose balls, challenges, deflections, aerial duels and restarts. Use the
