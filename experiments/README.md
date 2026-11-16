@@ -32,3 +32,4 @@ parallel sessions never edit the same file. Each record has:
 | Issue | Experiment | Key proxy metrics | Verdict |
 |---|---|---|---|
 | — | `baseline_smooth50` (organisers') | published full-match spellF1 0.2433 | the floor to beat |
+| #20 | `nearest_smooth` (the same baseline, window from the bench) | bench val spellF1 0.184, macroF1 0.455 | the bench's reference point |
