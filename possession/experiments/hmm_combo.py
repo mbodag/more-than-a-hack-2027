@@ -89,34 +89,36 @@ def fit_alive(matches, path=ALIVE_PATH, say=print):
         handle.write("\n")
     say("  alive: fitted on {} matches, {} folds; saved {}".format(
         len(ids), len(ids), os.path.relpath(path)))
-    _load_alive.cache = None
-    _p_alive.clear()
+    _alive_models.pop(path, None)
+    _p_alive.pop(path, None)
     return model
 
 
-def _load_alive():
-    if getattr(_load_alive, "cache", None) is None:
-        with open(ALIVE_PATH) as handle:
-            _load_alive.cache = json.load(handle)
-    return _load_alive.cache
+_alive_models = {}                      # path -> the saved alive models
+_p_alive = {}                           # path -> {match: P(alive)}
 
 
-_p_alive = weakref.WeakKeyDictionary()
+def _load_alive(path=ALIVE_PATH):
+    if path not in _alive_models:
+        with open(path) as handle:
+            _alive_models[path] = json.load(handle)
+    return _alive_models[path]
 
 
-def p_alive(match):
+def p_alive(match, path=ALIVE_PATH):
     """(n,) P(play is on), out of fold on any match the alive model was fitted on."""
-    if match in _p_alive:
-        return _p_alive[match]
-    models = _load_alive()
+    memo = _p_alive.setdefault(path, weakref.WeakKeyDictionary())
+    if match in memo:
+        return memo[match]
+    models = _load_alive(path)
     model = models["folds"].get(getattr(match, "match_id", None), models["all"])
     p = learn.predict_proba(model, stoppage.features(match)[0])
-    _p_alive[match] = p
+    memo[match] = p
     return p
 
 
-def alive_features(match):
-    p = np.clip(p_alive(match), 1e-4, 1 - 1e-4)
+def alive_features(match, path=ALIVE_PATH):
+    p = np.clip(p_alive(match, path), 1e-4, 1 - 1e-4)
     columns, names = [p, np.log(p / (1 - p))], ["p_alive", "alive_logit"]
     for half in ALIVE_WINDOWS:
         columns.append(hmm_context.centred_mean(p, half))
@@ -126,7 +128,7 @@ def alive_features(match):
 
 # Features and models -----------------------------------------------------------------------------
 
-def make_features(conf=True, alive=True, clean=True):
+def make_features(conf=True, alive=True, clean=True, alive_path=ALIVE_PATH):
     def features(match):
         tracked = clean_view(match) if clean else match
         X, names = hmm_touch_ms.features(tracked)
@@ -136,7 +138,7 @@ def make_features(conf=True, alive=True, clean=True):
             parts.append(C)
             names += cnames
         if alive:
-            A, anames = alive_features(match)
+            A, anames = alive_features(match, alive_path)
             parts.append(A)
             names += anames
         return np.nan_to_num(np.column_stack(parts)), names
