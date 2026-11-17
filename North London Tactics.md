@@ -1,191 +1,197 @@
-# Technical document
+# North London Tactics: who has the ball, frame by frame
 
-The third deliverable ([SUBMISSION.md](../SUBMISSION.md)). Kept up to date as we go: every PR that
-changes the method updates the relevant section. At submission it is copied to `<team_name>.md`.
-Markdown, not PDF: `*.pdf` is gitignored in this repo.
+Technical document for More than a Hack 2027, Phase 1 (Barcelona v Athletic Club). The submitted
+file is made by `python -m possession run north_london_tactics`, which runs the experiment
+`hmm_setpiece_islands`.
 
-## Approach
+## The approach
 
-**Submitted method: `hmm_final_ms`** (`possession/experiments/north_london_tactics.py` runs it).
-It is `hmm_final` (#26) with the ball's speed recomputed in m/s from its positions on every match
-(see "Ball speed across providers"). A classifier per frame, decoded as a sequence. For every frame, two logistic regressions give the probability that play is alive and,
-if so, that the home side has the ball; one pair for frames where the ATD tracks the ball and one
-for frames where it does not. A 3-state hidden Markov model (H, A, D) turns these into emission
-scores, and Viterbi finds the most likely sequence over each half, paying a penalty for every
-change of state. So possession only changes when the evidence for it holds up over time: that is
-what spellF1 rewards, where a majority vote leaves flicker and cannot say `D` while the ball is
-seen.
+We treat possession as a sequence problem rather than a per-frame one. The ranking metric scores
+whole possessions, so a method that is right on most frames but flickers between teams for a frame
+or two still loses badly. Early on we saw that the organisers' baseline (nearest player, then a
+majority vote) gets reasonable frame accuracy and very few possessions right, and that told us
+where to put the effort: in deciding *when* possession changes, not just who is closest to the ball.
 
-The evidence comes from tracking only: each side's nearest player to the ball and the margin
-between them, ball speed, the ball off the pitch, the team shape (#22), control evidence averaged
-over ±0.5 s and ±2 s, how long the ball has been missing and which side was nearest either side of
-the gap, and most of all **the side of the last control before the frame and of the next one
-after it**, because possession stays with the side that last controlled the ball through passes
-and tracking gaps. The whole match is known when it is labelled, so looking ahead is fair.
+What we built has four layers.
 
-Models and settings are fitted on other matches with a full ground truth (IDSSE, ADR 0003), never
-on BAR-ATH. On the bench's held-out test matches, run once: spellF1 0.497, macroF1 0.860
-(`hmm_final` 0.479 / 0.838; organisers' baseline 0.176 / 0.444 on the same bench). What we tried
-and dropped: `experiments/26-hmm.md`, `experiments/stoppages.md`,
-`experiments/control-confidence-probe.md`.
+**1. Evidence per frame.** For every frame, two logistic regressions give the probability that the
+ball is in play and, if it is, the probability that Barcelona (home) has it. There is one pair for
+frames where the tracking has the ball and one for frames where it doesn't, because those are
+really two different problems: with the ball we can look at who is near it; without it (41% of
+graded frames) we have to read the players. The features come from the tracking only:
 
-## Assets used, and dropped
+- each team's nearest player to the ball, and the margin between them;
+- the ball's speed, and whether it is beyond a line;
+- the team shape: where each side's players are and how they are spread;
+- control evidence (a player within 2 m of the ball and clearly closer than any opponent),
+  averaged over half a second and two seconds;
+- how long the ball has been missing, and which side was nearest at each end of the gap;
+- most importantly, **which side last controlled the ball before this frame and which side next
+  controls it after**, and how long ago and how soon. Possession stays with the side that last
+  had the ball through passes, loose balls and tracking gaps, so this turned out to be the
+  strongest single cue. The whole match is available when we label it, so looking ahead is fair.
 
-| Asset | Used? | How / why not |
+**2. A hidden Markov model over three states, H, A and D.** The probabilities above become emission
+scores, and Viterbi decoding finds the most likely sequence for each half on its own. Every change of
+state has a cost, learnt from how often possession changes and how often play stops on the
+training matches. So a single frame where an Athletic player is nearest the ball doesn't hand them
+possession; the evidence has to hold up for a while. We also make every stoppage last at least
+4 seconds (100 frames), because short false stoppages were splitting real possessions in two.
+
+**3. Set pieces from Smart Tagging.** We added this after watching our output in the match viewer.
+The pattern we saw: while a set piece is being set up, the ball is often not tracked, so the model
+has little to go on and can fill the stoppage with short, made-up possessions. And when a corner or
+free kick is delivered into the box, the nearest players to the ball are often the defenders, so the
+restart can go to the wrong side. Smart Tagging already marks every set piece, its type and, apart
+from throw-ins, the team taking it. So, for each `SET PIECES` tag:
+
+- we place the restart where the ball reappears (the end of the nearest ball gap of at least
+  2 s, within 10 s of the tag start), or at the tag start if there is no such gap;
+- from the start of that gap up to the restart (at most 30 s), the `D` state gets a bonus;
+- for 5 s after the restart, the team named in the tag gets a bonus. Throw-ins get no team bonus,
+  as they're all tagged `N/A`.
+
+These are bonuses added to the scores before decoding, not overrides. If the tracking clearly
+says otherwise, it still wins. We did it this way on purpose: Smart Tagging is automatic and has
+its own mistakes, and its intervals are phases of play, not possessions, so copying them across
+as labels would bring their errors with them.
+
+**4. No possession shorter than 3 seconds between two stoppages.** In long breaks (drinks breaks,
+injuries, VAR checks) players wander about while the ball isn't tracked, and the decoder sometimes
+hands one side the ball for a second or two. On the ranking metric each of those is a whole false
+possession. So after decoding, any stretch of play under 3 s with a stoppage directly before and
+after it becomes dead ball.
+
+**Why this rather than something else.** We tried several richer versions of the per-frame layer: a
+small neural network instead of logistic regression, separate weights for hidden-ball frames, a
+rule for who restarts after a stoppage, windowed team movement, hand-built feature combinations,
+and a dedicated stoppage model. None beat this one by more than the noise on our validation match,
+so we kept the simplest. The HMM itself was the big step: on our bench it took spellF1 from 0.18
+for the smoothed baseline to 0.34, and the last-touch features took it to 0.45.
+
+## Assets: what we used and what we dropped
+
+| Asset | Used? | How |
 |---|---|---|
-| Tactical ATD (tracking) | yes | every feature of the submitted method: ball and player positions, the metadata's sides, the team shape |
-| Smart Tagging | not in the method | used to find which side defends which end in the keeper rule, and as a label-free check (agreement with its in-possession phases: 0.814); never as labels |
-| Homography | not in the method | used by the tracking cleaning (positions outside the video picture), which the submitted model does not read yet |
-| Tactical video | no | watched to debug only; nothing written down from it |
+| Tactical ATD (tracking) | yes | every per-frame feature: ball and player positions, the sides from the metadata, the team shape |
+| Smart Tagging | yes | the `SET PIECES` tags (type and team) as evidence in the decoder; its in-possession phases only as a label-free check on our output, never as labels |
+| Homography | no | used to build a cleaned version of the tracking (removing positions held off camera, mostly the keepers), which the submitted model doesn't use |
+| Tactical video | no | watched in our viewer to debug and to look for failure patterns; nothing was written down from it as a label, and no setting is tied to any frame of the match |
 | Broadcast video and ATD | no | not synchronised to the scored timeline |
+
+We also built, and didn't use in the end: a rule putting the keepers on the right side (their
+tracklets often land in the other team's keeper slot), a players-only stoppage detector, a
+"control confidence" feature set, and ball speed recomputed in m/s (see the limitations). Each was
+within noise on our bench on its own.
 
 ## Training data
 
-_Every labelled dataset used: source, who labelled it, how much. None from the provided game.
-Write "none" if the method uses no labels._
+We used one labelled dataset, and nothing from the provided match.
 
-- **IDSSE open Bundesliga data** (Bassek, Weber, Rein & Memmert, 2025, *Scientific Data*;
-  CC BY 4.0; figshare): seven full matches of the 2022/23 Bundesliga and 2. Bundesliga, about
-  1.0 million frames at 25 Hz. Labels are the DFL's own per-frame ball status and ball possession,
-  produced by the provider's data collection, not by us. Split into four training, one validation
-  and two test matches (ADR 0003). The tracking is degraded to look like the ATD before any
-  method sees it: the ball is hidden in runs drawn from the ATD's own gap lengths, and the players
-  are broken into ATD-like tracklets (degradation v2).
-- Candidate `players_fill` (#22) fits two small logistic regressions on the training matches'
-  hidden-ball frames (about 130,000 frames, every fifth): alive or dead, and which side has the
-  ball, from side-level team-shape features. Their parameters are committed in
-  `possession/models/players_fill.json`.
-- Experiment `stoppages` fits one more logistic regression on every fifth frame of the training
-  matches, ball or not (about 340,000 frames): alive or dead. Its parameters are committed in
-  `possession/models/stoppages.json`.
+**IDSSE open Bundesliga data** (Bassek, Weber, Rein & Memmert, 2025, *Scientific Data*, CC BY 4.0,
+on figshare). Seven full matches from the 2022/23 Bundesliga and 2. Bundesliga, about a million
+frames at 25 Hz. The labels are the DFL's own per-frame ball status (in or out of play) and ball
+possession (home or away), made by the league's data provider, not by us.
 
-## Ball speed across providers
+We fixed the split before looking at any scores: four matches for training, one for validation
+and two for testing. Settings were chosen on training, methods compared on validation, and the test
+matches scored once per candidate. The final models are refitted on the training and validation
+matches together.
 
-`match.ball_speed` is the speed each provider's file gives, and the units differ: the DFL's is
-km/h (3.6 times the speed from its positions), the ATD's about 0.19 times it. A model fitted on the
-bench therefore sees BAR-ATH's ball as all but still on every frame (BAR-ATH's 90th percentile,
-3.4, is below the bench's in-play 10th, 6.9). `hmm_touch_ms` recomputes ball speed from the
-ball's positions in m/s on every match; on validation it scores spellF1 0.473 against
-`hmm_touch`'s 0.453 (within noise), and on BAR-ATH it gives 424 possessions and a 35% dead-ball
-share against 399 and 39%.
-Refitted the same way as `hmm_final` (train + validation), `hmm_final_ms` scores 0.497 / 0.860 on
-the bench's test matches against `hmm_final`'s 0.479 / 0.838, and agrees more with Smart Tagging
-on BAR-ATH (0.814 against 0.803).
+The DFL tracking is much cleaner than the ATD, so before any method sees it we degrade it to look
+like the ATD. We hide the ball in runs drawn from the ATD's own gap lengths, and break the players
+into short tracklets landing in random slots, as the ATD does. Three random seeds of this.
 
-The DFL's tracking also freezes the ball while it is out of play (speed exactly 0 on 99% of dead
-frames with a ball, against 1% on BAR-ATH), so on the bench a still ball means a dead ball, which
-BAR-ATH never shows. Dropping ball speed from `hmm_touch` costs 0.065 spellF1 on validation, but
-alive/dead F1 hardly moves (0.914 to 0.912): the speed's value is in play (passes), not in
-stoppages. With m/s speed the bench's alive/dead F1 rises to 0.937, part of which may be that
-frozen ball; the bench cannot tell.
+Layers 3 and 4 have **no training data**. The bench matches have no Smart Tagging, so the
+set-piece windows and bonus sizes (2 s, 10 s, 30 s, 5 s, and a bonus of 1.0 per frame) were set by
+hand, once, before the first run, and not adjusted afterwards. The 3-second threshold was also set
+by hand: on the training matches every setting from off to 6 s scored within 0.01 of the others,
+and they have far fewer long breaks than this match.
 
-## Stoppages, and where the rest is
+## The possession rules we implemented
 
-`stoppages` (`possession/stoppage.py`) calls a stoppage on every frame from the players alone:
-how many are standing, how bunched they are, how many are tracked, the team shape, and whether
-the ball is tracked and beyond the lines, each also averaged over 1 to 10 s; no ball speed. It
-reaches validation spellF1 0.324 against `players_fill`'s 0.253, with the same alive/dead F1 as
-`hmm_touch` (0.912), so the HMM already finds stoppages as well as a dedicated model does.
+We didn't hand-write the definitions of possession and dead ball. The models learn the DFL's
+per-frame definitions from the training matches, so where the line falls on a loose ball or a
+challenge is, in the first place, the DFL's. On top of that, the decoder adds:
 
-Two bench-only oracles bound what is left for `hmm_touch`: true dead balls with its sides score
-0.518 (+0.065), its dead balls with true sides 0.847 (+0.39). The remaining gains are in changes
-of possession in open play, not in dead balls (`experiments/stoppages.md`).
+- **Loose balls and challenges:** possession stays with the side that last controlled the ball
+  until the other side's evidence holds up. A deflection, a block or a 50/50 that doesn't end in a
+  control by the other team doesn't change possession.
+- **Flicker:** every change of state costs something, so brief touches and contested balls don't
+  break a possession into pieces.
+- **Stoppages:** at least 4 seconds. Anything shorter is absorbed into the possession around it.
+- **Restarts:** a set piece is a stoppage up to the moment the ball is played again, and the team
+  taking it is favoured for the first 5 seconds after. Throw-ins have no team in Smart Tagging, so
+  there the tracking alone decides who has the ball after the restart.
+- **Breaks in play:** a possession can't be shorter than 3 seconds if there's a stoppage on both
+  sides of it.
+- **Abstaining:** we never do. Every graded frame gets `H`, `A` or `D`.
 
-## Tracking that sees nobody, removed
+## Results
 
-Two faults of the ATD, both almost only in the keeper slots (Track 24 home, Track 46 away), each
-confirmed by eye on candidate frames of BAR-ATH (`possession/clean.py`, `match.track_xy_clean`):
+| On our bench's two test matches | spellF1 | macroF1 |
+|---|---|---|
+| Organisers' baseline | 0.176 | 0.444 |
+| Layers 1–2 alone | 0.479 | 0.838 |
+| The submitted method (scored once) | 0.479 | 0.837 |
 
-- **Held off camera.** The keeper slots go on being tracked when the camera cannot see the keeper:
-  projected through the homography, their positions fall outside the picture on about half their
-  graded frames (58% home, 47% away), against 0.01% for outfield slots. There they barely move
-  (median 0.05 m a second, against 0.5-0.7 m on camera): the tracker holds a last guess. Every
-  position outside the picture is removed.
-- **Stuck.** A track can freeze where nobody is, also on camera: both keeper slots for the last
-  minutes of the match, and the home one for minutes in the second half. Every stretch over which
-  a slot moves less than 0.3 m (along x and along y) for 30 s is removed. On BAR-ATH no outfield
-  slot is caught, even in stoppages where everyone stands still (they move 0.5-1.5 m).
+The bench has no Smart Tagging, so there the set-piece layer does nothing, and the 3-second rule
+makes no measurable difference either: the bench matches have few long breaks. So the bench says
+the extra layers do no harm, and nothing about whether they help on this match. On Barcelona v Athletic we can only check things that
+don't need labels:
 
-On BAR-ATH's graded frames this removes 134,055 slot-frames off camera (140 of them outfield) and
-27,821 stuck (all keeper slots): 5% of all tracked slot-frames.
+| | layers 1–2 | submitted |
+|---|---|---|
+| possessions | 384 | see `experiments/metrics/north_london_tactics.json` |
+| share of frames dead | 40.3% | |
+| possessions under 1 s | 8.1% | |
+| agreement with Smart Tagging's in-possession phases | 0.803 | |
 
-## Keepers on the right side
-
-Its metadata gives each side one keeper slot (Track 24 home, Track 46 away), and the two keepers'
-tracklets land in either: a keeper standing in his own goal is often in the other side's slot,
-sometimes while his own slot tracks him too. A slot's side is fixed, so the keeper counts for the
-wrong team exactly when he has the ball (saves, goal kicks, build-up).
-
-The rule (`possession/keepers.py`, `match.track_team_fixed`), on the cleaned tracking: each
-tracklet of a keeper slot
-belongs to the side defending the end it stands in (its median x, cut at the halves). Which side
-defends which end is read at each half's kick-off, tagged by Smart Tagging, where every player is
-in their own half: the lower median x of the outfield slots defends x = 0. Outfield slots are left
-alone: only 3 outfield tracklets of 10 s or more live in the other side's keeper area.
-
-Of the keeper slots' 132,798 graded slot-frames left after cleaning, 9,137 (7%) are given to the
-other side (1,332 home slot, 7,805 away slot). With the cleaning, the nearest player's side changes
-on 1,346 of the 94,214 frames with a ball. The team-shape features still use the raw tracking and
-the metadata's sides, as their models were fitted on them.
-
-## Possession rules implemented
-
-We do not hand-write the rules: the models learn the DFL's own per-frame definitions from the
-bench (ball status and ball possession), so where the line falls is the DFL's. What our decoding
-adds on top:
-
-- **Possession sticks with the side that last controlled the ball**, through passes in flight,
-  loose balls and tracking gaps, until the evidence for the other side holds up; a deflection or
-  a challenge that does not lead to a control does not change possession.
-- **Every change of state costs** (the HMM's switch penalty), so brief touches and contested balls
-  do not split a possession into flickers.
-- **A stoppage lasts at least 4 s** (`dead_min` 100 frames): shorter dead stretches are absorbed
-  into the possession around them. Restarts start a new possession for whichever side the evidence
-  then favours.
-- **We never abstain**: every graded frame gets `H`, `A` or `D`; any `X` inside a half is filled
-  from the labels around it, never across halftime.
+The agreement check uses Smart Tagging's build-up and attacking phases, not the set pieces, so the
+set-piece layer isn't marking its own homework there.
 
 ## Limitations
 
-- **Open-play changes of possession are the main loss.** On the bench, giving the model the true
-  sides would lift spellF1 from 0.453 to 0.847; giving it the true dead balls only to 0.518. Short
-  possessions (most are under 10 s) are often missed or merged.
-- **The labels are the DFL's, on Bundesliga matches.** If the organisers' ground truth draws the
-  line differently (loose balls, restarts), we inherit the difference.
-- **The bench only imitates the ATD.** The DFL's tracking is degraded to look like the ATD (ball
-  gaps, broken tracklets), but its other habits differ: the DFL freezes the ball out of play, and
-  the providers report ball speed in different units, which we found and fixed late.
-- **The submitted model reads the raw tracking.** The cleaning (keepers held off camera, stuck
-  tracks) and the keeper side fix are built but not yet fed to the HMM, so a keeper in the wrong
-  slot can still count for the wrong side.
-- With more time: control confidence and the stoppage model as HMM evidence on the cleaned
-  tracking (`hmm_combo`), and evidence aimed at open-play turnovers.
+- **The set-piece layer is unmeasured.** We have no labelled match with Smart Tagging, so we can't
+  say how much it helps, only that it moves the label-free checks in the right direction. A stand-in
+  version of Smart Tagging built from the bench matches' own set-piece events would let us fit and
+  test it properly. We got as far as building one, but not as far as running this method on it.
+- **Restart timing is rough.** Smart Tagging's set-piece windows are long (around 35 s) and start a
+  few seconds before the ball is played. When we can't see the ball reappear, we fall back to the
+  tag start, which puts the restart a few seconds early.
+- **Throw-ins carry no team**, and they are the most common restart.
+- **The 3-second rule has a cost.** Real possessions that short, between two stoppages, do happen
+  (36 of 405 such stretches on our training matches were under 4 s), and the rule removes them.
+- **Ball speed is in the wrong units.** The two tracking providers report ball speed differently:
+  the Bundesliga data we train on gives km/h, and this match's ATD gives roughly 0.19 × m/s. So our
+  model sees this match's ball as moving much more slowly than it really is. We found this late. A
+  version that recomputes speed from the ball's positions scored 0.497 on our bench test against
+  0.479, which is within the bench's noise. We submitted the version we had examined most closely.
+- **Open-play turnovers are where most of the remaining error is.** On the bench, giving our model
+  the true dead balls would lift spellF1 by about 0.07; giving it the true sides would lift it by
+  about 0.39. Short possessions, and most are under 10 s, are often missed or merged.
+- **The labels are the DFL's.** If the organisers draw the line differently on loose balls or
+  restarts, we inherit the difference.
+- **The bench only imitates the ATD.** We copy its ball gaps and broken tracks, but not every habit.
+- **The model reads the raw tracking.** The cleaned tracking and keeper fix exist but aren't fed in,
+  so a keeper sitting in the wrong team's slot can still count for the wrong side.
+
+With more time, we'd fix the ball-speed units in the submitted model, fit the set-piece layer on the
+stand-in Smart Tagging rather than guess its settings, add the stoppage model and control-confidence
+features (which together scored best on validation, 0.495), and go after open-play turnovers
+directly.
 
 ## Reproduction
 
 ```bash
-pip install -r requirements.txt                            # pinned versions
-python scripts/check_data.py                               # the data matches the committed checksums (#2)
-python -m possession run north_london_tactics              # regenerates "North London Tactics.csv"
+pip install -r requirements.txt
+python scripts/check_data.py
+python -m possession run north_london_tactics
 python evaluation/validate_submission.py "North London Tactics.csv"
 ```
 
-`python -m possession run` checks the data itself and stops if it fails, runs the chosen
-experiment, fills each `X` inside a half from the labels around it (never across halftime), writes
-the CSV and checks it as read back from disk with the official format check (ADR 0002). It then
-prints a label-free proxy report for the graded halves (possessions, their lengths, label changes
-per minute, dead-ball and home shares, agreement with Smart Tagging's in-possession phases), with
-warnings for values outside provisional ranges, and saves it to
-`experiments/metrics/<experiment>.json`. For the submission it also runs the organisers'
-`evaluation/validate_submission.py` on the file. Only the format checks can fail a run. Add `--rebuild-cache` to rebuild every
-prepared input item instead of loading it from `outputs/cache/`; the result must be byte-identical
-either way.
-
-## Pre-submission checklist
-
-- [ ] A fresh clone plus the data bundle regenerates `<team_name>.csv` byte for byte.
-- [ ] `validate_submission.py` passes on the exact file being uploaded.
-- [ ] The public 5-minute score looks sane (pipeline check only; never used to choose).
-- [ ] No data, video or ground truth is tracked in git.
-- [ ] Every section above is filled in and matches the code.
-- [ ] CSV and document named after the team.
+`check_data.py` confirms the match data matches the committed checksums. The run then checks the
+data again, builds the features, decodes, writes `North London Tactics.csv` and validates it with
+the organisers' own format check. The fitted models are committed in `possession/models/`, so
+nothing is retrained. To refit them from the open data, run `python scripts/fetch_idsse.py`, then
+`python -m possession.experiments.hmm_final`.

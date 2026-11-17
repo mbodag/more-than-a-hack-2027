@@ -57,3 +57,16 @@ Trial. On both base models it raises Smart Tagging agreement and the dead-ball s
 tuned by watching BAR-ATH: the windows and bonuses were set once, before the first run. `hmm_setpiece_ms` is the
 version to compare with the submission. Neither is a candidate until benched with set-piece tags
 made from the bench matches' own events.
+
+## The submission: `hmm_setpiece_islands`
+
+Chosen by the team as the submission. It is `hmm_setpiece` (on `hmm_final`) followed by
+`hmm.drop_dead_islands` at 3 s (`island_min` 75), the rule from #35: any play stretch shorter than
+3 s with a stoppage on both sides becomes `D`. `north_london_tactics` runs it. Nothing is refitted.
+
+Bench test, scored once (degradation v2, seeds 0-2): **spellF1 0.479, macroF1 0.837**, against
+`hmm_final`'s 0.479 / 0.838. The bench has no Smart Tagging and few long breaks, so neither layer
+does anything measurable there; the bench says they do no harm, not that they help.
+
+It is built on `hmm_final`, not `hmm_final_ms`, so it keeps the ball-speed units bug (see
+`docs/TECHNICAL.md`, limitations). That was the team's choice, made knowingly.
