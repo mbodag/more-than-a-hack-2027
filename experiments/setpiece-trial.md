@@ -5,9 +5,11 @@
 ## Method
 
 `hmm_final`, unchanged, with Smart Tagging's `SET PIECES` tags as extra evidence before decoding.
-The motive is one failure seen in the viewer: during a corner's setup the ball is not tracked, and
-`hmm_final` labels the stoppage as short H and A spells, then gives the restart to the defending
-side (the defenders are nearest the ball in the box).
+The motive is a failure pattern spotted while debugging in the viewer: while a set piece is being
+set up the ball is often not tracked, so the model can label the stoppage as short H and A spells;
+and at a delivery into the box the defenders are nearest the ball, so the restart can go to the
+defending side. The fix is general (every set-piece tag, nothing tied to a frame) and is still to
+be judged on the bench.
 
 For each set-piece tag:
 
@@ -51,7 +53,7 @@ The runner's format check and the organisers' validator passed.
 
 ## Verdict
 
-Trial. It looks right on the corner that motivated it, seen side by side in the viewer, and on both
-base models it raises Smart Tagging agreement and the dead-ball share. `hmm_setpiece_ms` is the
+Trial. On both base models it raises Smart Tagging agreement and the dead-ball share. Nothing was
+tuned by watching BAR-ATH: the windows and bonuses were set once, before the first run. `hmm_setpiece_ms` is the
 version to compare with the submission. Neither is a candidate until benched with set-piece tags
 made from the bench matches' own events.
