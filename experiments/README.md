@@ -44,3 +44,6 @@ parallel sessions never edit the same file. Each record has:
 | — | `hmm_touch_ms` (ball speed from positions, m/s, on every match) | bench val 0.473 / 0.838; BAR-ATH 424 possessions, ST agreement 0.808 | fixes a unit mismatch; `hmm_final` should be refitted with it |
 | — | control confidence probe (`possession/controls.py`, not an experiment) | train, clean: confidence ≥ 0.4 precision 0.763 vs 0.717 for the 2 m rule at the same side recall (0.88); ≥ 0.9 reaches 0.881 | fed to the HMM as `hmm_conf`; see `control-confidence-probe.md` |
 | — | `hmm_conf` (`hmm_touch` + confidence-weighted last/next control, pass-bys) | bench val 0.460 / 0.817 vs 0.453 / 0.815; train 0.478 vs 0.464; seed 0 worse | not kept: within noise |
+| — | control confidence tuned on train (`scripts/tune_controls.py`) | val AUC 0.798 vs 0.748 hand-set | kept as `possession/models/control_params.json`; see `control-tuning.md` |
+| — | `hmm_conf_ms` (`hmm_touch_ms` + tuned control features) | bench val 0.484 / 0.840 vs 0.473 / 0.838; **test 0.503 / 0.860 vs 0.498 / 0.861** (`hmm_touch_ms`, first test run) | small gain within noise; free to add if `hmm_final` is refitted |
+| — | `hmm_conf_ms_hand` (the same, hand-set scales) | bench val 0.488 / 0.841 | tuning the scales did not help the HMM |
