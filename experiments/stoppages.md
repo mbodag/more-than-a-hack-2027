@@ -67,10 +67,22 @@ it is within noise of `hmm_touch` (its alive/dead gain may partly be the frozen 
 bench cannot tell apart), and on BAR-ATH it is the first version whose ball speed means what the
 model learnt.
 
+## 4. `hmm_final_ms`: the candidate refitted with m/s ball speed
+
+`hmm_final`'s method, settings and refit (train + validation, seeds 0-2) with `hmm_touch_ms`'s
+features. Test run once.
+
+| | bench **test** spellF1 | macroF1 | BAR-ATH possessions | median | dead share | ST agreement |
+|---|---|---|---|---|---|---|
+| `hmm_final` | 0.479 | 0.838 | 384 | 4.94 s | 40.3% | 0.803 |
+| `hmm_final_ms` | **0.497** | **0.860** | 408 | 4.98 s | 35.5% | **0.814** |
+
+Within spellF1's noise on the bench, ahead on macroF1, and on BAR-ATH it reads a ball speed in the
+unit it learnt. Both pass the official format check.
+
 ## Verdict
 
 - `stoppages`: dropped as a method (the HMM does as well on stoppages and better elsewhere); its
   features stay in `possession/stoppage.py` for reuse.
-- `hmm_touch_ms`: recommended fix for the candidate. `hmm_final` should be refitted with m/s ball
-  speed before it is submitted; its test score has not been rerun.
+- `hmm_final_ms`: recommended candidate in place of `hmm_final` (#5 decides).
 - Next effort: changes of possession in open play.

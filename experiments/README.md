@@ -41,6 +41,7 @@ parallel sessions never edit the same file. Each record has:
 | #26 | `hmm_final` (`hmm_touch` refitted on train + val) | bench **test** 0.479 / 0.838 | candidate; BAR-ATH proxies pending |
 | #24 | `stoppages` (dead balls from the players on every frame) | bench val 0.324 / 0.774; alive/dead F1 0.912, as `hmm_touch` | dropped as a method; see `stoppages.md` |
 | — | `oracle_stoppages`, `oracle_team` (bench only) | on `hmm_touch`: true dead balls 0.518, true sides 0.847 | the gains left are in open-play changes of possession |
-| — | `hmm_touch_ms` (ball speed from positions, m/s, on every match) | bench val 0.473 / 0.838; BAR-ATH 424 possessions, ST agreement 0.808 | fixes a unit mismatch; `hmm_final` should be refitted with it |
+| — | `hmm_touch_ms` (ball speed from positions, m/s, on every match) | bench val 0.473 / 0.838; BAR-ATH 424 possessions, ST agreement 0.808 | fixes a unit mismatch; see `hmm_final_ms` |
+| — | `hmm_final_ms` (`hmm_final` refitted with m/s ball speed) | bench **test** 0.497 / 0.860 vs 0.479 / 0.838; BAR-ATH: ST agreement 0.814 vs 0.803, possessions 408 vs 384 | recommended candidate in place of `hmm_final` |
 | — | control confidence probe (`possession/controls.py`, not an experiment) | train, clean: confidence ≥ 0.4 precision 0.763 vs 0.717 for the 2 m rule at the same side recall (0.88); ≥ 0.9 reaches 0.881 | fed to the HMM as `hmm_conf`; see `control-confidence-probe.md` |
 | — | `hmm_conf` (`hmm_touch` + confidence-weighted last/next control, pass-bys) | bench val 0.460 / 0.817 vs 0.453 / 0.815; train 0.478 vs 0.464; seed 0 worse | not kept: within noise |

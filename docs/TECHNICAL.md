@@ -67,6 +67,9 @@ bench therefore sees BAR-ATH's ball as all but still on every frame (BAR-ATH's 9
 ball's positions in m/s on every match; on validation it scores spellF1 0.473 against
 `hmm_touch`'s 0.453 (within noise), and on BAR-ATH it gives 424 possessions and a 35% dead-ball
 share against 399 and 39%.
+Refitted the same way as `hmm_final` (train + validation), `hmm_final_ms` scores 0.497 / 0.860 on
+the bench's test matches against `hmm_final`'s 0.479 / 0.838, and agrees more with Smart Tagging
+on BAR-ATH (0.814 against 0.803).
 
 The DFL's tracking also freezes the ball while it is out of play (speed exactly 0 on 99% of dead
 frames with a ball, against 1% on BAR-ATH), so on the bench a still ball means a dead ball, which
