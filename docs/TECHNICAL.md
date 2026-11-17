@@ -6,10 +6,9 @@ Markdown, not PDF: `*.pdf` is gitignored in this repo.
 
 ## Approach
 
-_What we built, and why that rather than something else. To be filled once #5 decides the method._
-
-**Candidate from #26 (`hmm_final`), draft until #5 decides.** A classifier per frame, decoded as a
-sequence. For every frame, two logistic regressions give the probability that play is alive and,
+**Submitted method: `hmm_final_ms`** (`possession/experiments/north_london_tactics.py` runs it).
+It is `hmm_final` (#26) with the ball's speed recomputed in m/s from its positions on every match
+(see "Ball speed across providers"). A classifier per frame, decoded as a sequence. For every frame, two logistic regressions give the probability that play is alive and,
 if so, that the home side has the ball; one pair for frames where the ATD tracks the ball and one
 for frames where it does not. A 3-state hidden Markov model (H, A, D) turns these into emission
 scores, and Viterbi finds the most likely sequence over each half, paying a penalty for every
@@ -25,18 +24,20 @@ after it**, because possession stays with the side that last controlled the ball
 and tracking gaps. The whole match is known when it is labelled, so looking ahead is fair.
 
 Models and settings are fitted on other matches with a full ground truth (IDSSE, ADR 0003), never
-on BAR-ATH. On the bench's held-out test matches: spellF1 0.479, macroF1 0.838 (organisers'
-baseline 0.176 / 0.444 on the same bench). What we tried and dropped: `experiments/26-hmm.md`.
+on BAR-ATH. On the bench's held-out test matches, run once: spellF1 0.497, macroF1 0.860
+(`hmm_final` 0.479 / 0.838; organisers' baseline 0.176 / 0.444 on the same bench). What we tried
+and dropped: `experiments/26-hmm.md`, `experiments/stoppages.md`,
+`experiments/control-confidence-probe.md`.
 
 ## Assets used, and dropped
 
 | Asset | Used? | How / why not |
 |---|---|---|
-| Tactical ATD (tracking) | | |
-| Smart Tagging | | |
-| Homography | | |
-| Tactical video | | |
-| Broadcast video and ATD | no (so far) | not synchronised to the scored timeline |
+| Tactical ATD (tracking) | yes | every feature of the submitted method: ball and player positions, the metadata's sides, the team shape |
+| Smart Tagging | not in the method | used to find which side defends which end in the keeper rule, and as a label-free check (agreement with its in-possession phases: 0.814); never as labels |
+| Homography | not in the method | used by the tracking cleaning (positions outside the video picture), which the submitted model does not read yet |
+| Tactical video | no | watched to debug only; nothing written down from it |
+| Broadcast video and ATD | no | not synchronised to the scored timeline |
 
 ## Training data
 
@@ -129,12 +130,36 @@ the metadata's sides, as their models were fitted on them.
 
 ## Possession rules implemented
 
-_Where we drew the line on loose balls, challenges, deflections, aerial duels and restarts. Use the
-terms in [CONTEXT.md](../CONTEXT.md)._
+We do not hand-write the rules: the models learn the DFL's own per-frame definitions from the
+bench (ball status and ball possession), so where the line falls is the DFL's. What our decoding
+adds on top:
+
+- **Possession sticks with the side that last controlled the ball**, through passes in flight,
+  loose balls and tracking gaps, until the evidence for the other side holds up; a deflection or
+  a challenge that does not lead to a control does not change possession.
+- **Every change of state costs** (the HMM's switch penalty), so brief touches and contested balls
+  do not split a possession into flickers.
+- **A stoppage lasts at least 4 s** (`dead_min` 100 frames): shorter dead stretches are absorbed
+  into the possession around them. Restarts start a new possession for whichever side the evidence
+  then favours.
+- **We never abstain**: every graded frame gets `H`, `A` or `D`; any `X` inside a half is filled
+  from the labels around it, never across halftime.
 
 ## Limitations
 
-_Where it fails, and what we would fix with more time._
+- **Open-play changes of possession are the main loss.** On the bench, giving the model the true
+  sides would lift spellF1 from 0.453 to 0.847; giving it the true dead balls only to 0.518. Short
+  possessions (most are under 10 s) are often missed or merged.
+- **The labels are the DFL's, on Bundesliga matches.** If the organisers' ground truth draws the
+  line differently (loose balls, restarts), we inherit the difference.
+- **The bench only imitates the ATD.** The DFL's tracking is degraded to look like the ATD (ball
+  gaps, broken tracklets), but its other habits differ: the DFL freezes the ball out of play, and
+  the providers report ball speed in different units, which we found and fixed late.
+- **The submitted model reads the raw tracking.** The cleaning (keepers held off camera, stuck
+  tracks) and the keeper side fix are built but not yet fed to the HMM, so a keeper in the wrong
+  slot can still count for the wrong side.
+- With more time: control confidence and the stoppage model as HMM evidence on the cleaned
+  tracking (`hmm_combo`), and evidence aimed at open-play turnovers.
 
 ## Reproduction
 
