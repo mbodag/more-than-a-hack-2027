@@ -48,3 +48,4 @@ parallel sessions never edit the same file. Each record has:
 | — | control confidence tuned on train (`scripts/tune_controls.py`) | val AUC 0.798 vs 0.748 hand-set | kept as `possession/models/control_params.json`; see `control-tuning.md` |
 | — | `hmm_conf_ms` (`hmm_touch_ms` + tuned control features) | bench val 0.484 / 0.840 vs 0.473 / 0.838; **test 0.503 / 0.860 vs 0.498 / 0.861** (`hmm_touch_ms`, first test run) | small gain within noise; free to add if `hmm_final` is refitted |
 | — | `hmm_conf_ms_hand` (the same, hand-set scales) | bench val 0.488 / 0.841 | tuning the scales did not help the HMM |
+| — | `hmm_combo` (`hmm_touch_ms` + control confidence + cross-fitted P(alive) + cleaned tracking) | bench val 0.495 / 0.848 vs 0.473 / 0.838; ablations 0.487 (no conf), 0.490 (no alive); BAR-ATH ST agreement 0.832 | best on validation; needs refit + one test run; see `hmm-combo.md` |
