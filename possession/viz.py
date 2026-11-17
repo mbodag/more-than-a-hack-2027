@@ -7,7 +7,8 @@ The page is plain HTML and JavaScript (possession/viewer/), opened from disk wit
 opened that way cannot fetch data files, so the data is written as scripts next to it:
 
     meta.js          everything small: halves, teams, Smart Tagging, per-frame ball and player
-                     counts, the public ground truth, where the video is
+                     counts, the public ground truth, where the video is, the ball controls
+                     (possession/controls.py)
     chunks/cNNNN.js  positions and homography for frames [NNNN * 1500, (NNNN + 1) * 1500), loaded
                      as the playhead reaches them; only chunks touching a half are written
 
@@ -151,17 +152,31 @@ def tagging_events(events):
             for event in events]
 
 
+def control_rows(match):
+    """The match's ball controls (possession/controls.py) as the page wants them:
+    [start, end (inclusive), object slot (track + 1), side, confidence]."""
+    from possession import controls
+    ep = controls.episodes(match)
+    if len(ep.get("start", ())) == 0:
+        return []
+    return [[int(a), int(b), int(t) + 1, str(side), round(float(c), 2)]
+            for a, b, t, side, c in zip(ep["start"], ep["end"], ep["track"], ep["side"],
+                                        ep["confidence"])]
+
+
 # Writing -----------------------------------------------------------------------------------------
 
 def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography, events, blocks,
                  pitch, fps, video_path, ground_truth=None, chunk_frames=CHUNK_FRAMES,
-                 say=print, game=games.GAME, predictions=None, view=None, truth_on=False):
+                 say=print, game=games.GAME, predictions=None, view=None, truth_on=False,
+                 controls=None):
     """Write the page and its data into `out_dir`; returns the path of index.html.
 
     ball_xy (n, 2) and track_xy (n, tracks, 2) are in metres, NaN where not tracked, as the Match
     gives them; homography is (n, 3, 3); events come from tagging_events(). video_path None means
     the match has no video. predictions is [(name, labels)], shown as if their CSVs were dropped;
     view ("both", "video", "pitch") is the starting view; truth_on ticks the ground truth.
+    controls is control_rows() of possession/controls.py's episodes, or None.
     """
     n_frames = len(ball_xy)
     track_team = np.asarray(track_team)
@@ -208,6 +223,7 @@ def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography,
         "n_home": _b64((tracked & (track_team == "H")).sum(axis=1).astype(np.uint8)),
         "n_away": _b64((tracked & (track_team == "A")).sum(axis=1).astype(np.uint8)),
         "ground_truth": ground_truth,
+        "controls": controls or [],
         "video": {"uri": pathlib.Path(video_path).resolve().as_uri() if video_path else None,
                   "path": video_path, "width": VIDEO_SIZE[0], "height": VIDEO_SIZE[1]},
     }
@@ -236,7 +252,7 @@ def build(out_dir=OUT_DIR, say=print):
         out_dir, match.ball_xy, match.track_xy, match.track_team, team_names, homography, events,
         blocks=half_blocks(), pitch=games.GAMES[games.GAME]["pitch"],
         fps=games.GAMES[games.GAME]["fps"], video_path=match.video_path,
-        ground_truth=read_ground_truth(), say=say)
+        ground_truth=read_ground_truth(), say=say, controls=control_rows(match))
     if not os.path.isfile(match.video_path):
         say("    no video at {}: the page will show the pitch only until it is there".format(
             match.video_path))
@@ -268,7 +284,7 @@ def build_external(match_id, experiments=(), seed=0, clean=False, out_dir=None, 
         pitch=match.pitch, fps=external.FPS, video_path=None,
         ground_truth={"first": 0, "labels": "".join(match.labels.tolist())}, say=say,
         game="{} ({})".format(match_id, "clean" if clean else match.degraded),
-        predictions=predictions, view="pitch", truth_on=True)
+        predictions=predictions, view="pitch", truth_on=True, controls=control_rows(match))
     say("open {}".format(index))
     return index
 

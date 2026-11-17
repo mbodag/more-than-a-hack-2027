@@ -1,0 +1,1373 @@
+{
+ "after_frames": 12,
+ "regimes": {
+  "clean": {
+   "per_match": [
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 217,
+       "precision": 0.3548387096774194
+      },
+      "0.3-0.5": {
+       "n": 211,
+       "precision": 0.35545023696682465
+      },
+      "0.5-0.7": {
+       "n": 214,
+       "precision": 0.5233644859813084
+      },
+      "0.7-0.9": {
+       "n": 214,
+       "precision": 0.6448598130841121
+      },
+      "<0.1": {
+       "n": 341,
+       "precision": 0.3841642228739003
+      },
+      ">=0.9": {
+       "n": 1102,
+       "precision": 0.8856624319419237
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7549668874172185,
+       "high_share": 0.722488038277512,
+       "low": 0.3996865203761755
+      },
+      "impulse_score": {
+       "high": 0.6987888362295945,
+       "high_share": 0.8260113092648977,
+       "low": 0.455
+      },
+      "prox": {
+       "high": 0.7254800207576544,
+       "high_share": 0.838190517616355,
+       "low": 0.29838709677419356
+      },
+      "sep": {
+       "high": 0.6840593585447583,
+       "high_share": 0.9086559373640714,
+       "low": 0.38095238095238093
+      },
+      "together": {
+       "high": 0.8574126534466477,
+       "high_share": 0.4606350587211831,
+       "low": 0.4846774193548387
+      }
+     },
+     "clock_lag_frames": -15,
+     "clock_median_dist": 2.5196151733398438,
+     "confidence": {
+      "0.0": {
+       "controls": 2455,
+       "precision": 0.6563723357981731,
+       "recall_player": 0.7871212121212121,
+       "recall_side": 0.9340909090909091
+      },
+      "0.1": {
+       "controls": 2081,
+       "precision": 0.7037793667007151,
+       "recall_player": 0.7833333333333333,
+       "recall_side": 0.9174242424242425
+      },
+      "0.2": {
+       "controls": 1941,
+       "precision": 0.7295081967213115,
+       "recall_player": 0.7787878787878788,
+       "recall_side": 0.9090909090909091
+      },
+      "0.3": {
+       "controls": 1843,
+       "precision": 0.7472716829408386,
+       "recall_player": 0.7712121212121212,
+       "recall_side": 0.9053030303030303
+      },
+      "0.4": {
+       "controls": 1742,
+       "precision": 0.7691373025516404,
+       "recall_player": 0.7628787878787879,
+       "recall_side": 0.896969696969697
+      },
+      "0.5": {
+       "controls": 1616,
+       "precision": 0.8013071895424837,
+       "recall_player": 0.7522727272727273,
+       "recall_side": 0.8863636363636364
+      },
+      "0.6": {
+       "controls": 1486,
+       "precision": 0.8293201133144475,
+       "recall_player": 0.7356060606060606,
+       "recall_side": 0.8696969696969697
+      },
+      "0.7": {
+       "controls": 1376,
+       "precision": 0.8465045592705167,
+       "recall_player": 0.7098484848484848,
+       "recall_side": 0.8484848484848485
+      },
+      "0.8": {
+       "controls": 1267,
+       "precision": 0.8677074774034511,
+       "recall_player": 0.6863636363636364,
+       "recall_side": 0.8272727272727273
+      },
+      "0.9": {
+       "controls": 1146,
+       "precision": 0.8856624319419237,
+       "recall_player": 0.6484848484848484,
+       "recall_side": 0.7916666666666666
+      }
+     },
+     "dead_share": 0.0635437881873727,
+     "match": "J03WMX",
+     "n_episodes": 2455,
+     "n_events": 1320,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1866,
+       "precision": 0.7332576617480137,
+       "recall_player": 0.7325757575757575,
+       "recall_side": 0.884090909090909
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 2231,
+       "precision": 0.6840593585447583,
+       "recall_player": 0.7689393939393939,
+       "recall_side": 0.9227272727272727
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 236,
+       "precision": 0.3771186440677966
+      },
+      "0.3-0.5": {
+       "n": 212,
+       "precision": 0.36792452830188677
+      },
+      "0.5-0.7": {
+       "n": 195,
+       "precision": 0.5076923076923077
+      },
+      "0.7-0.9": {
+       "n": 254,
+       "precision": 0.7007874015748031
+      },
+      "<0.1": {
+       "n": 391,
+       "precision": 0.4373401534526854
+      },
+      ">=0.9": {
+       "n": 787,
+       "precision": 0.866581956797967
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7213578500707214,
+       "high_share": 0.6814457831325301,
+       "low": 0.41906202723146746
+      },
+      "impulse_score": {
+       "high": 0.6714463840399002,
+       "high_share": 0.7730120481927711,
+       "low": 0.46709129511677283
+      },
+      "prox": {
+       "high": 0.686012768427162,
+       "high_share": 0.8303614457831325,
+       "low": 0.32670454545454547
+      },
+      "sep": {
+       "high": 0.6515565264882578,
+       "high_share": 0.8824096385542168,
+       "low": 0.4262295081967213
+      },
+      "together": {
+       "high": 0.8443877551020408,
+       "high_share": 0.37783132530120483,
+       "low": 0.4918667699457785
+      }
+     },
+     "clock_lag_frames": -43,
+     "clock_median_dist": 2.301067590713501,
+     "confidence": {
+      "0.0": {
+       "controls": 2246,
+       "precision": 0.6250602409638554,
+       "recall_player": 0.8282630029440629,
+       "recall_side": 0.9263984298331698
+      },
+      "0.1": {
+       "controls": 1832,
+       "precision": 0.668646080760095,
+       "recall_player": 0.8194308145240432,
+       "recall_side": 0.9116781157998037
+      },
+      "0.2": {
+       "controls": 1713,
+       "precision": 0.690989847715736,
+       "recall_player": 0.81648675171737,
+       "recall_side": 0.9057899901864573
+      },
+      "0.3": {
+       "controls": 1573,
+       "precision": 0.7161602209944752,
+       "recall_player": 0.7988223748773308,
+       "recall_side": 0.8940137389597644
+      },
+      "0.4": {
+       "controls": 1465,
+       "precision": 0.7405764966740577,
+       "recall_player": 0.788027477919529,
+       "recall_side": 0.8891069676153092
+      },
+      "0.5": {
+       "controls": 1337,
+       "precision": 0.7758899676375405,
+       "recall_player": 0.7723258096172718,
+       "recall_side": 0.8743866535819431
+      },
+      "0.6": {
+       "controls": 1239,
+       "precision": 0.7998259355961705,
+       "recall_player": 0.7566241413150148,
+       "recall_side": 0.8557409224730128
+      },
+      "0.7": {
+       "controls": 1119,
+       "precision": 0.8261287223823247,
+       "recall_player": 0.7281648675171737,
+       "recall_side": 0.830225711481845
+      },
+      "0.8": {
+       "controls": 992,
+       "precision": 0.8460710441334769,
+       "recall_player": 0.6849852796859667,
+       "recall_side": 0.7929342492639843
+      },
+      "0.9": {
+       "controls": 835,
+       "precision": 0.866581956797967,
+       "recall_player": 0.6074582924435721,
+       "recall_side": 0.7301275760549558
+      }
+     },
+     "dead_share": 0.0761353517364203,
+     "match": "J03WN1",
+     "n_episodes": 2246,
+     "n_events": 1019,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1636,
+       "precision": 0.703851261620186,
+       "recall_player": 0.7595682041216879,
+       "recall_side": 0.888125613346418
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1989,
+       "precision": 0.6515565264882578,
+       "recall_player": 0.7958783120706575,
+       "recall_side": 0.9116781157998037
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 175,
+       "precision": 0.29714285714285715
+      },
+      "0.3-0.5": {
+       "n": 190,
+       "precision": 0.4105263157894737
+      },
+      "0.5-0.7": {
+       "n": 166,
+       "precision": 0.4457831325301205
+      },
+      "0.7-0.9": {
+       "n": 211,
+       "precision": 0.7251184834123223
+      },
+      "<0.1": {
+       "n": 387,
+       "precision": 0.40310077519379844
+      },
+      ">=0.9": {
+       "n": 779,
+       "precision": 0.8818998716302953
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7068713450292398,
+       "high_share": 0.7169811320754716,
+       "low": 0.43148148148148147
+      },
+      "impulse_score": {
+       "high": 0.6965901183020181,
+       "high_share": 0.7531446540880503,
+       "low": 0.42250530785562634
+      },
+      "prox": {
+       "high": 0.6893382352941176,
+       "high_share": 0.8553459119496856,
+       "low": 0.2717391304347826
+      },
+      "sep": {
+       "high": 0.6489046773238603,
+       "high_share": 0.8852201257861635,
+       "low": 0.4748858447488584
+      },
+      "together": {
+       "high": 0.8612565445026178,
+       "high_share": 0.40041928721174,
+       "low": 0.4737762237762238
+      }
+     },
+     "clock_lag_frames": 17,
+     "clock_median_dist": 3.267488479614258,
+     "confidence": {
+      "0.0": {
+       "controls": 2099,
+       "precision": 0.6289308176100629,
+       "recall_player": 0.7035647279549718,
+       "recall_side": 0.900562851782364
+      },
+      "0.1": {
+       "controls": 1680,
+       "precision": 0.6863905325443787,
+       "recall_player": 0.6969981238273921,
+       "recall_side": 0.8893058161350844
+      },
+      "0.2": {
+       "controls": 1564,
+       "precision": 0.7119831814996496,
+       "recall_player": 0.6885553470919324,
+       "recall_side": 0.8818011257035647
+      },
+      "0.3": {
+       "controls": 1470,
+       "precision": 0.736998514115899,
+       "recall_player": 0.6763602251407129,
+       "recall_side": 0.8724202626641651
+      },
+      "0.4": {
+       "controls": 1356,
+       "precision": 0.7632,
+       "recall_player": 0.6604127579737336,
+       "recall_side": 0.8545966228893058
+      },
+      "0.5": {
+       "controls": 1256,
+       "precision": 0.7906574394463668,
+       "recall_player": 0.6416510318949343,
+       "recall_side": 0.8461538461538461
+      },
+      "0.6": {
+       "controls": 1143,
+       "precision": 0.8245283018867925,
+       "recall_player": 0.6275797373358349,
+       "recall_side": 0.8358348968105066
+      },
+      "0.7": {
+       "controls": 1065,
+       "precision": 0.8484848484848485,
+       "recall_player": 0.6078799249530957,
+       "recall_side": 0.8123827392120075
+      },
+      "0.8": {
+       "controls": 971,
+       "precision": 0.8754134509371555,
+       "recall_player": 0.5928705440900562,
+       "recall_side": 0.7842401500938087
+      },
+      "0.9": {
+       "controls": 832,
+       "precision": 0.8818998716302953,
+       "recall_player": 0.5375234521575984,
+       "recall_side": 0.726078799249531
+      }
+     },
+     "dead_share": 0.09099571224392568,
+     "match": "J03WOH",
+     "n_episodes": 2099,
+     "n_events": 1066,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1533,
+       "precision": 0.7030913012221424,
+       "recall_player": 0.6322701688555347,
+       "recall_side": 0.8545966228893058
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1865,
+       "precision": 0.6489046773238603,
+       "recall_player": 0.6726078799249531,
+       "recall_side": 0.8874296435272045
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 235,
+       "precision": 0.3617021276595745
+      },
+      "0.3-0.5": {
+       "n": 216,
+       "precision": 0.3888888888888889
+      },
+      "0.5-0.7": {
+       "n": 178,
+       "precision": 0.47191011235955055
+      },
+      "0.7-0.9": {
+       "n": 227,
+       "precision": 0.7268722466960352
+      },
+      "<0.1": {
+       "n": 415,
+       "precision": 0.39036144578313253
+      },
+      ">=0.9": {
+       "n": 956,
+       "precision": 0.891213389121339
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7705345501955672,
+       "high_share": 0.688819039066008,
+       "low": 0.36075036075036077
+      },
+      "impulse_score": {
+       "high": 0.6950113378684807,
+       "high_share": 0.7920969914683431,
+       "low": 0.4449244060475162
+      },
+      "prox": {
+       "high": 0.7190449750138812,
+       "high_share": 0.8087112707678491,
+       "low": 0.3215962441314554
+      },
+      "sep": {
+       "high": 0.672808764940239,
+       "high_share": 0.9016614279299506,
+       "low": 0.3698630136986301
+      },
+      "together": {
+       "high": 0.9146868250539957,
+       "high_share": 0.4158060170633139,
+       "low": 0.4496541122213682
+      }
+     },
+     "clock_lag_frames": 11,
+     "clock_median_dist": 2.517892837524414,
+     "confidence": {
+      "0.0": {
+       "controls": 2428,
+       "precision": 0.6430175123484508,
+       "recall_player": 0.7979066022544283,
+       "recall_side": 0.9041867954911433
+      },
+      "0.1": {
+       "controls": 1982,
+       "precision": 0.7008830022075055,
+       "recall_player": 0.7922705314009661,
+       "recall_side": 0.8913043478260869
+      },
+      "0.2": {
+       "controls": 1864,
+       "precision": 0.7209165687426558,
+       "recall_player": 0.785829307568438,
+       "recall_side": 0.8896940418679549
+      },
+      "0.3": {
+       "controls": 1728,
+       "precision": 0.75142675967026,
+       "recall_player": 0.7769726247987118,
+       "recall_side": 0.8816425120772947
+      },
+      "0.4": {
+       "controls": 1608,
+       "precision": 0.7791327913279132,
+       "recall_player": 0.7648953301127214,
+       "recall_side": 0.8711755233494364
+      },
+      "0.5": {
+       "controls": 1475,
+       "precision": 0.8089639970609845,
+       "recall_player": 0.751207729468599,
+       "recall_side": 0.857487922705314
+      },
+      "0.6": {
+       "controls": 1356,
+       "precision": 0.835583796664019,
+       "recall_player": 0.7351046698872786,
+       "recall_side": 0.8405797101449275
+      },
+      "0.7": {
+       "controls": 1268,
+       "precision": 0.8596787827557059,
+       "recall_player": 0.7254428341384863,
+       "recall_side": 0.8317230273752013
+      },
+      "0.8": {
+       "controls": 1164,
+       "precision": 0.8747731397459165,
+       "recall_player": 0.7004830917874396,
+       "recall_side": 0.8115942028985508
+      },
+      "0.9": {
+       "controls": 1004,
+       "precision": 0.891213389121339,
+       "recall_player": 0.6368760064412239,
+       "recall_side": 0.7616747181964574
+      }
+     },
+     "dead_share": 0.0827841845140033,
+     "match": "J03WQQ",
+     "n_episodes": 2428,
+     "n_events": 1242,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1774,
+       "precision": 0.7280487804878049,
+       "recall_player": 0.7463768115942029,
+       "recall_side": 0.8711755233494364
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 2192,
+       "precision": 0.672808764940239,
+       "recall_player": 0.7801932367149759,
+       "recall_side": 0.893719806763285
+      }
+     }
+    }
+   ],
+   "summary": {
+    "by_bin": {
+     "0.1-0.3": {
+      "n": 215.75,
+      "precision": 0.3477005846369119
+     },
+     "0.3-0.5": {
+      "n": 207.25,
+      "precision": 0.3806974924867685
+     },
+     "0.5-0.7": {
+      "n": 188.25,
+      "precision": 0.4871875096408218
+     },
+     "0.7-0.9": {
+      "n": 226.5,
+      "precision": 0.6994094861918182
+     },
+     "<0.1": {
+      "n": 383.5,
+      "precision": 0.4037416493258792
+     },
+     ">=0.9": {
+      "n": 906.0,
+      "precision": 0.8813394123728813
+     }
+    },
+    "by_score": {
+     "dwell": {
+      "high": 0.7384326581781868,
+      "high_share": 0.7024334981378804,
+      "low": 0.40274509745987136
+     },
+     "impulse_score": {
+      "high": 0.6904591691099984,
+      "high_share": 0.7860662507535157,
+      "low": 0.44738025225497885
+     },
+     "prox": {
+      "high": 0.7049689998732038,
+      "high_share": 0.8331522865292557,
+      "low": 0.3046067541987443
+     },
+     "sep": {
+      "high": 0.6643323318242789,
+      "high_share": 0.8944867824086007,
+      "low": 0.4129826868991477
+     },
+     "together": {
+      "high": 0.8694359445263256,
+      "high_share": 0.41367292207436046,
+      "low": 0.4749936313245523
+     }
+    },
+    "confidence": {
+     "0.0": {
+      "controls": 2307.0,
+      "precision": 0.6383452266801355,
+      "recall_player": 0.7792138863186688,
+      "recall_side": 0.9163097465493966
+     },
+     "0.1": {
+      "controls": 1893.75,
+      "precision": 0.6899247455531735,
+      "recall_player": 0.7730082007714337,
+      "recall_side": 0.9024281305463044
+     },
+     "0.2": {
+      "controls": 1770.5,
+      "precision": 0.7133494486698382,
+      "recall_player": 0.7674148212914048,
+      "recall_side": 0.8965940167122215
+     },
+     "0.3": {
+      "controls": 1653.5,
+      "precision": 0.7379642944303682,
+      "recall_player": 0.7558418365072191,
+      "recall_side": 0.8883448860010636
+     },
+     "0.4": {
+      "controls": 1542.75,
+      "precision": 0.7630116476384028,
+      "recall_player": 0.744053588471193,
+      "recall_side": 0.8779622027059371
+     },
+     "0.5": {
+      "controls": 1421.0,
+      "precision": 0.7942046484218439,
+      "recall_player": 0.7293643245633832,
+      "recall_side": 0.866098014701185
+     },
+     "0.6": {
+      "controls": 1306.0,
+      "precision": 0.8223145368653574,
+      "recall_player": 0.7137286522860473,
+      "recall_side": 0.8504631247813541
+     },
+     "0.7": {
+      "controls": 1207.0,
+      "precision": 0.8451992282233489,
+      "recall_player": 0.6928340278643101,
+      "recall_side": 0.8307040816384756
+     },
+     "0.8": {
+      "controls": 1098.5,
+      "precision": 0.865991278055,
+      "recall_player": 0.6661756379817747,
+      "recall_side": 0.8040103323822677
+     },
+     "0.9": {
+      "controls": 954.25,
+      "precision": 0.8813394123728813,
+      "recall_player": 0.6075856498818107,
+      "recall_side": 0.7523869400419028
+     }
+    },
+    "rules": {
+     "hmm_touch r2 (2 m, 1 m)": {
+      "controls": 1702.25,
+      "precision": 0.7170622512695367,
+      "recall_player": 0.7176977355367957,
+      "recall_side": 0.8744971671690173
+     },
+     "hmm_touch r3 (3 m, 0.5 m)": {
+      "controls": 2069.25,
+      "precision": 0.6643323318242789,
+      "recall_player": 0.7544047056624951,
+      "recall_side": 0.9038887097043915
+     }
+    }
+   }
+  },
+  "degraded v2 seed 0": {
+   "per_match": [
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 135,
+       "precision": 0.37037037037037035
+      },
+      "0.3-0.5": {
+       "n": 139,
+       "precision": 0.39568345323741005
+      },
+      "0.5-0.7": {
+       "n": 126,
+       "precision": 0.48412698412698413
+      },
+      "0.7-0.9": {
+       "n": 131,
+       "precision": 0.6870229007633588
+      },
+      "<0.1": {
+       "n": 214,
+       "precision": 0.37850467289719625
+      },
+      ">=0.9": {
+       "n": 661,
+       "precision": 0.8835098335854765
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7485207100591716,
+       "high_share": 0.7211948790896159,
+       "low": 0.413265306122449
+      },
+      "impulse_score": {
+       "high": 0.6955767562879445,
+       "high_share": 0.8200568990042674,
+       "low": 0.47035573122529645
+      },
+      "prox": {
+       "high": 0.727351164797239,
+       "high_share": 0.8243243243243243,
+       "low": 0.3157894736842105
+      },
+      "sep": {
+       "high": 0.6844166014095536,
+       "high_share": 0.9082503556187767,
+       "low": 0.3643410852713178
+      },
+      "together": {
+       "high": 0.8450704225352113,
+       "high_share": 0.4544807965860597,
+       "low": 0.49674054758800523
+      }
+     },
+     "clock_lag_frames": -15,
+     "clock_median_dist": 2.5196151733398438,
+     "confidence": {
+      "0.0": {
+       "controls": 1510,
+       "precision": 0.655049786628734,
+       "recall_player": null,
+       "recall_side": 0.5727272727272728
+      },
+      "0.1": {
+       "controls": 1278,
+       "precision": 0.7046979865771812,
+       "recall_player": null,
+       "recall_side": 0.5590909090909091
+      },
+      "0.2": {
+       "controls": 1194,
+       "precision": 0.7275985663082437,
+       "recall_player": null,
+       "recall_side": 0.5537878787878788
+      },
+      "0.3": {
+       "controls": 1130,
+       "precision": 0.7473982970671712,
+       "recall_player": null,
+       "recall_side": 0.5492424242424242
+      },
+      "0.4": {
+       "controls": 1060,
+       "precision": 0.7701612903225806,
+       "recall_player": null,
+       "recall_side": 0.5416666666666666
+      },
+      "0.5": {
+       "controls": 977,
+       "precision": 0.8006535947712419,
+       "recall_player": null,
+       "recall_side": 0.5340909090909091
+      },
+      "0.6": {
+       "controls": 901,
+       "precision": 0.8282352941176471,
+       "recall_player": null,
+       "recall_side": 0.5234848484848484
+      },
+      "0.7": {
+       "controls": 833,
+       "precision": 0.851010101010101,
+       "recall_player": null,
+       "recall_side": 0.5098484848484849
+      },
+      "0.8": {
+       "controls": 758,
+       "precision": 0.8689655172413793,
+       "recall_player": null,
+       "recall_side": 0.48863636363636365
+      },
+      "0.9": {
+       "controls": 689,
+       "precision": 0.8835098335854765,
+       "recall_player": null,
+       "recall_side": 0.4674242424242424
+      }
+     },
+     "dead_share": 0.06887417218543046,
+     "match": "J03WMX",
+     "n_episodes": 1510,
+     "n_events": 1320,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1160,
+       "precision": 0.7373271889400922,
+       "recall_player": null,
+       "recall_side": 0.5462121212121213
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1377,
+       "precision": 0.6844166014095536,
+       "recall_player": null,
+       "recall_side": 0.5666666666666667
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 144,
+       "precision": 0.4027777777777778
+      },
+      "0.3-0.5": {
+       "n": 126,
+       "precision": 0.3968253968253968
+      },
+      "0.5-0.7": {
+       "n": 100,
+       "precision": 0.5
+      },
+      "0.7-0.9": {
+       "n": 143,
+       "precision": 0.7062937062937062
+      },
+      "<0.1": {
+       "n": 245,
+       "precision": 0.45714285714285713
+      },
+      ">=0.9": {
+       "n": 429,
+       "precision": 0.8741258741258742
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7220125786163522,
+       "high_share": 0.6697556866048863,
+       "low": 0.4387755102040816
+      },
+      "impulse_score": {
+       "high": 0.6789709172259508,
+       "high_share": 0.7531592249368155,
+       "low": 0.47440273037542663
+      },
+      "prox": {
+       "high": 0.6863354037267081,
+       "high_share": 0.8138163437236732,
+       "low": 0.3755656108597285
+      },
+      "sep": {
+       "high": 0.654178674351585,
+       "high_share": 0.8770008424599831,
+       "low": 0.4452054794520548
+      },
+      "together": {
+       "high": 0.8271334792122538,
+       "high_share": 0.38500421229991577,
+       "low": 0.5041095890410959
+      }
+     },
+     "clock_lag_frames": -43,
+     "clock_median_dist": 2.301067590713501,
+     "confidence": {
+      "0.0": {
+       "controls": 1319,
+       "precision": 0.628475147430497,
+       "recall_player": null,
+       "recall_side": 0.5260058881256133
+      },
+      "0.1": {
+       "controls": 1058,
+       "precision": 0.673036093418259,
+       "recall_player": null,
+       "recall_side": 0.5132482826300294
+      },
+      "0.2": {
+       "controls": 980,
+       "precision": 0.6944127708095781,
+       "recall_player": null,
+       "recall_side": 0.5083415112855741
+      },
+      "0.3": {
+       "controls": 896,
+       "precision": 0.7218045112781954,
+       "recall_player": null,
+       "recall_side": 0.5004906771344455
+      },
+      "0.4": {
+       "controls": 835,
+       "precision": 0.7395973154362416,
+       "recall_player": null,
+       "recall_side": 0.4975466143277723
+      },
+      "0.5": {
+       "controls": 750,
+       "precision": 0.7827380952380952,
+       "recall_player": null,
+       "recall_side": 0.4887144259077527
+      },
+      "0.6": {
+       "controls": 688,
+       "precision": 0.8041733547351525,
+       "recall_player": null,
+       "recall_side": 0.47203140333660454
+      },
+      "0.7": {
+       "controls": 625,
+       "precision": 0.8321678321678322,
+       "recall_player": null,
+       "recall_side": 0.4592737978410206
+      },
+      "0.8": {
+       "controls": 548,
+       "precision": 0.8503937007874016,
+       "recall_player": null,
+       "recall_side": 0.436702649656526
+      },
+      "0.9": {
+       "controls": 456,
+       "precision": 0.8741258741258742,
+       "recall_player": null,
+       "recall_side": 0.39842983316977426
+      }
+     },
+     "dead_share": 0.10007581501137225,
+     "match": "J03WN1",
+     "n_episodes": 1319,
+     "n_events": 1019,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 945,
+       "precision": 0.7120853080568721,
+       "recall_player": null,
+       "recall_side": 0.4985279685966634
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1165,
+       "precision": 0.654178674351585,
+       "recall_player": null,
+       "recall_side": 0.5161923454367027
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 132,
+       "precision": 0.3333333333333333
+      },
+      "0.3-0.5": {
+       "n": 127,
+       "precision": 0.4409448818897638
+      },
+      "0.5-0.7": {
+       "n": 101,
+       "precision": 0.45544554455445546
+      },
+      "0.7-0.9": {
+       "n": 127,
+       "precision": 0.7559055118110236
+      },
+      "<0.1": {
+       "n": 256,
+       "precision": 0.42578125
+      },
+      ">=0.9": {
+       "n": 492,
+       "precision": 0.8902439024390244
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.7104072398190046,
+       "high_share": 0.7157894736842105,
+       "low": 0.4586894586894587
+      },
+      "impulse_score": {
+       "high": 0.6997792494481236,
+       "high_share": 0.7336032388663968,
+       "low": 0.47112462006079026
+      },
+      "prox": {
+       "high": 0.7019230769230769,
+       "high_share": 0.8421052631578947,
+       "low": 0.30256410256410254
+      },
+      "sep": {
+       "high": 0.6607970342910102,
+       "high_share": 0.8736842105263158,
+       "low": 0.48717948717948717
+      },
+      "together": {
+       "high": 0.847953216374269,
+       "high_share": 0.4153846153846154,
+       "low": 0.4903047091412742
+      }
+     },
+     "clock_lag_frames": 17,
+     "clock_median_dist": 3.267488479614258,
+     "confidence": {
+      "0.0": {
+       "controls": 1361,
+       "precision": 0.6388663967611335,
+       "recall_player": null,
+       "recall_side": 0.5825515947467167
+      },
+      "0.1": {
+       "controls": 1090,
+       "precision": 0.6945863125638406,
+       "recall_player": null,
+       "recall_side": 0.5703564727954972
+      },
+      "0.2": {
+       "controls": 1005,
+       "precision": 0.7172717271727173,
+       "recall_player": null,
+       "recall_side": 0.5637898686679175
+      },
+      "0.3": {
+       "controls": 937,
+       "precision": 0.7508854781582054,
+       "recall_player": null,
+       "recall_side": 0.5572232645403377
+      },
+      "0.4": {
+       "controls": 870,
+       "precision": 0.7766497461928934,
+       "recall_player": null,
+       "recall_side": 0.5478424015009381
+      },
+      "0.5": {
+       "controls": 795,
+       "precision": 0.8055555555555556,
+       "recall_player": null,
+       "recall_side": 0.5384615384615384
+      },
+      "0.6": {
+       "controls": 728,
+       "precision": 0.8338368580060423,
+       "recall_player": null,
+       "recall_side": 0.5300187617260788
+      },
+      "0.7": {
+       "controls": 676,
+       "precision": 0.8626817447495961,
+       "recall_player": null,
+       "recall_side": 0.5187617260787992
+      },
+      "0.8": {
+       "controls": 623,
+       "precision": 0.8850174216027874,
+       "recall_player": null,
+       "recall_side": 0.50093808630394
+      },
+      "0.9": {
+       "controls": 532,
+       "precision": 0.8902439024390244,
+       "recall_player": null,
+       "recall_side": 0.4606003752345216
+      }
+     },
+     "dead_share": 0.09257898603967671,
+     "match": "J03WOH",
+     "n_episodes": 1361,
+     "n_events": 1066,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 968,
+       "precision": 0.7183580387685291,
+       "recall_player": null,
+       "recall_side": 0.5478424015009381
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1195,
+       "precision": 0.6607970342910102,
+       "recall_player": null,
+       "recall_side": 0.574108818011257
+      }
+     }
+    },
+    {
+     "by_bin": {
+      "0.1-0.3": {
+       "n": 128,
+       "precision": 0.3828125
+      },
+      "0.3-0.5": {
+       "n": 129,
+       "precision": 0.35658914728682173
+      },
+      "0.5-0.7": {
+       "n": 100,
+       "precision": 0.43
+      },
+      "0.7-0.9": {
+       "n": 136,
+       "precision": 0.7647058823529411
+      },
+      "<0.1": {
+       "n": 253,
+       "precision": 0.3794466403162055
+      },
+      ">=0.9": {
+       "n": 562,
+       "precision": 0.896797153024911
+      }
+     },
+     "by_score": {
+      "dwell": {
+       "high": 0.77007700770077,
+       "high_share": 0.694954128440367,
+       "low": 0.3558897243107769
+      },
+      "impulse_score": {
+       "high": 0.6941986234021632,
+       "high_share": 0.7775229357798165,
+       "low": 0.46735395189003437
+      },
+      "prox": {
+       "high": 0.7260536398467433,
+       "high_share": 0.7981651376146789,
+       "low": 0.3181818181818182
+      },
+      "sep": {
+       "high": 0.6700421940928271,
+       "high_share": 0.9059633027522935,
+       "low": 0.3902439024390244
+      },
+      "together": {
+       "high": 0.9045936395759717,
+       "high_share": 0.4327217125382263,
+       "low": 0.444743935309973
+      }
+     },
+     "clock_lag_frames": 11,
+     "clock_median_dist": 2.517892837524414,
+     "confidence": {
+      "0.0": {
+       "controls": 1431,
+       "precision": 0.6437308868501529,
+       "recall_player": null,
+       "recall_side": 0.534621578099839
+      },
+      "0.1": {
+       "controls": 1162,
+       "precision": 0.7071090047393365,
+       "recall_player": null,
+       "recall_side": 0.5241545893719807
+      },
+      "0.2": {
+       "controls": 1097,
+       "precision": 0.7259036144578314,
+       "recall_player": null,
+       "recall_side": 0.5225442834138486
+      },
+      "0.3": {
+       "controls": 1021,
+       "precision": 0.7518878101402373,
+       "recall_player": null,
+       "recall_side": 0.5185185185185185
+      },
+      "0.4": {
+       "controls": 941,
+       "precision": 0.7876312718786465,
+       "recall_player": null,
+       "recall_side": 0.5104669887278583
+      },
+      "0.5": {
+       "controls": 873,
+       "precision": 0.8157894736842105,
+       "recall_player": null,
+       "recall_side": 0.5040257648953301
+      },
+      "0.6": {
+       "controls": 808,
+       "precision": 0.8404825737265416,
+       "recall_player": null,
+       "recall_side": 0.4975845410628019
+      },
+      "0.7": {
+       "controls": 754,
+       "precision": 0.8710601719197708,
+       "recall_player": null,
+       "recall_side": 0.49033816425120774
+      },
+      "0.8": {
+       "controls": 698,
+       "precision": 0.8776758409785933,
+       "recall_player": null,
+       "recall_side": 0.47665056360708535
+      },
+      "0.9": {
+       "controls": 595,
+       "precision": 0.896797153024911,
+       "recall_player": null,
+       "recall_side": 0.4363929146537842
+      }
+     },
+     "dead_share": 0.0859538784067086,
+     "match": "J03WQQ",
+     "n_episodes": 1431,
+     "n_events": 1242,
+     "rules": {
+      "hmm_touch r2 (2 m, 1 m)": {
+       "controls": 1056,
+       "precision": 0.7263374485596708,
+       "recall_player": null,
+       "recall_side": 0.5144927536231884
+      },
+      "hmm_touch r3 (3 m, 0.5 m)": {
+       "controls": 1300,
+       "precision": 0.6700421940928271,
+       "recall_player": null,
+       "recall_side": 0.5289855072463768
+      }
+     }
+    }
+   ],
+   "summary": {
+    "by_bin": {
+     "0.1-0.3": {
+      "n": 134.75,
+      "precision": 0.37232349537037035
+     },
+     "0.3-0.5": {
+      "n": 130.25,
+      "precision": 0.39751071980984803
+     },
+     "0.5-0.7": {
+      "n": 106.75,
+      "precision": 0.4673931321703599
+     },
+     "0.7-0.9": {
+      "n": 134.25,
+      "precision": 0.7284820003052574
+     },
+     "<0.1": {
+      "n": 242.0,
+      "precision": 0.41021885508906475
+     },
+     ">=0.9": {
+      "n": 536.0,
+      "precision": 0.8861691907938216
+     }
+    },
+    "by_score": {
+     "dwell": {
+      "high": 0.7377543840488245,
+      "high_share": 0.7004235419547699,
+      "low": 0.4166549998316915
+     },
+     "impulse_score": {
+      "high": 0.6921313865910456,
+      "high_share": 0.771085574646824,
+      "low": 0.4708092583878869
+     },
+     "prox": {
+      "high": 0.7104158213234418,
+      "high_share": 0.8196027672051427,
+      "low": 0.3280252513224649
+     },
+     "sep": {
+      "high": 0.667358626036244,
+      "high_share": 0.8912246778393422,
+      "low": 0.42174248858547103
+     },
+     "together": {
+      "high": 0.8561876894244265,
+      "high_share": 0.42189783420220434,
+      "low": 0.4839746952700871
+     }
+    },
+    "confidence": {
+     "0.0": {
+      "controls": 1405.25,
+      "precision": 0.6415305544176294,
+      "recall_player": null,
+      "recall_side": 0.5539765834248604
+     },
+     "0.1": {
+      "controls": 1147.0,
+      "precision": 0.6948573493246544,
+      "recall_player": null,
+      "recall_side": 0.5417125634721042
+     },
+     "0.2": {
+      "controls": 1069.0,
+      "precision": 0.7162966696870926,
+      "recall_player": null,
+      "recall_side": 0.5371158855388047
+     },
+     "0.3": {
+      "controls": 996.0,
+      "precision": 0.7429940241609523,
+      "recall_player": null,
+      "recall_side": 0.5313687211089315
+     },
+     "0.4": {
+      "controls": 926.5,
+      "precision": 0.7685099059575905,
+      "recall_player": null,
+      "recall_side": 0.5243806678058088
+     },
+     "0.5": {
+      "controls": 848.75,
+      "precision": 0.8011841798122759,
+      "recall_player": null,
+      "recall_side": 0.5163231595888825
+     },
+     "0.6": {
+      "controls": 781.25,
+      "precision": 0.8266820201463458,
+      "recall_player": null,
+      "recall_side": 0.5057798886525834
+     },
+     "0.7": {
+      "controls": 722.0,
+      "precision": 0.854229962461825,
+      "recall_player": null,
+      "recall_side": 0.4945555432548781
+     },
+     "0.8": {
+      "controls": 656.75,
+      "precision": 0.8705131201525405,
+      "recall_player": null,
+      "recall_side": 0.47573191580097873
+     },
+     "0.9": {
+      "controls": 568.0,
+      "precision": 0.8861691907938216,
+      "recall_player": null,
+      "recall_side": 0.4407118413705806
+     }
+    },
+    "rules": {
+     "hmm_touch r2 (2 m, 1 m)": {
+      "controls": 1032.25,
+      "precision": 0.723526996081291,
+      "recall_player": null,
+      "recall_side": 0.5267688112332278
+     },
+     "hmm_touch r3 (3 m, 0.5 m)": {
+      "controls": 1259.25,
+      "precision": 0.667358626036244,
+      "recall_player": null,
+      "recall_side": 0.5464883343402508
+     }
+    }
+   }
+  }
+ },
+ "split": "train",
+ "tolerance_frames": 25
+}
