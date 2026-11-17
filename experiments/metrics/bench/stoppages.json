@@ -1,0 +1,288 @@
+{
+  "train": {
+    "macro_f1": 0.7743687568834267,
+    "per_match": [
+      {
+        "alive_dead_f1": 0.9050044912906651,
+        "degraded": "v2/seed0",
+        "macro_f1": 0.7741884262166123,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 352.0,
+        "spell_f1_mean": 0.3351485148514851,
+        "team_acc_both_alive": 0.7972153199050488
+      },
+      {
+        "alive_dead_f1": 0.9121339961260476,
+        "degraded": "v2/seed1",
+        "macro_f1": 0.7697974130876893,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 379.0,
+        "spell_f1_mean": 0.31233532934131736,
+        "team_acc_both_alive": 0.7790392412892585
+      },
+      {
+        "alive_dead_f1": 0.9201661516640495,
+        "degraded": "v2/seed2",
+        "macro_f1": 0.7791204313459784,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 362.0,
+        "spell_f1_mean": 0.3232273838630807,
+        "team_acc_both_alive": 0.7807734654555464
+      }
+    ],
+    "regime": "degraded v2 seeds [0, 1, 2]",
+    "settings": {
+      "enter": 0.5,
+      "leave": 0.5,
+      "min_dead": 75,
+      "window": 50
+    },
+    "spell_f1_mean": 0.3235704093519611,
+    "split": "val",
+    "train_grid": [
+      {
+        "macro_f1": 0.7790816062875225,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 25
+        },
+        "spell_f1_mean": 0.31189599015392394
+      },
+      {
+        "macro_f1": 0.7788530247154252,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 25
+        },
+        "spell_f1_mean": 0.31206879505311585
+      },
+      {
+        "macro_f1": 0.7769284646795458,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 25
+        },
+        "spell_f1_mean": 0.310289188247349
+      },
+      {
+        "macro_f1": 0.7769167543743221,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 25
+        },
+        "spell_f1_mean": 0.31023268782508506
+      },
+      {
+        "macro_f1": 0.7815767069150849,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 25
+        },
+        "spell_f1_mean": 0.30771019013279627
+      },
+      {
+        "macro_f1": 0.7829063358975786,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 25
+        },
+        "spell_f1_mean": 0.3124091196791107
+      },
+      {
+        "macro_f1": 0.7761787372862496,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 25
+        },
+        "spell_f1_mean": 0.3061373112420919
+      },
+      {
+        "macro_f1": 0.7775554768319143,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 25
+        },
+        "spell_f1_mean": 0.30630206020047396
+      },
+      {
+        "macro_f1": 0.7854657188897067,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 50
+        },
+        "spell_f1_mean": 0.33469107914797996
+      },
+      {
+        "macro_f1": 0.7851700736798025,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 50
+        },
+        "spell_f1_mean": 0.3344188285091487
+      },
+      {
+        "macro_f1": 0.7833872347376806,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 50
+        },
+        "spell_f1_mean": 0.3335399434289248
+      },
+      {
+        "macro_f1": 0.7833015851993297,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 50
+        },
+        "spell_f1_mean": 0.3330718862700117
+      },
+      {
+        "macro_f1": 0.7882597897124253,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 50
+        },
+        "spell_f1_mean": 0.33234677633890974
+      },
+      {
+        "macro_f1": 0.7895300566767981,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 50
+        },
+        "spell_f1_mean": 0.33619649286230513
+      },
+      {
+        "macro_f1": 0.7829202672719444,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 50
+        },
+        "spell_f1_mean": 0.3303169950063091
+      },
+      {
+        "macro_f1": 0.7841965183978633,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 50
+        },
+        "spell_f1_mean": 0.32996002865600227
+      },
+      {
+        "macro_f1": 0.7862887616939181,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 75
+        },
+        "spell_f1_mean": 0.3241622561596373
+      },
+      {
+        "macro_f1": 0.7861025397850075,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 75
+        },
+        "spell_f1_mean": 0.32349719356232
+      },
+      {
+        "macro_f1": 0.7846462394396685,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 75
+        },
+        "spell_f1_mean": 0.32492225216300635
+      },
+      {
+        "macro_f1": 0.7845885421360558,
+        "settings": {
+          "enter": 0.35,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 75
+        },
+        "spell_f1_mean": 0.323748362899844
+      },
+      {
+        "macro_f1": 0.7895935138657465,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 25,
+          "window": 75
+        },
+        "spell_f1_mean": 0.3259249167788722
+      },
+      {
+        "macro_f1": 0.7905729483072724,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.5,
+          "min_dead": 75,
+          "window": 75
+        },
+        "spell_f1_mean": 0.32763607235242975
+      },
+      {
+        "macro_f1": 0.7847078640786201,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 25,
+          "window": 75
+        },
+        "spell_f1_mean": 0.32553709984152623
+      },
+      {
+        "macro_f1": 0.7858289193984884,
+        "settings": {
+          "enter": 0.5,
+          "leave": 0.65,
+          "min_dead": 75,
+          "window": 75
+        },
+        "spell_f1_mean": 0.32438111514716256
+      }
+    ]
+  }
+}
