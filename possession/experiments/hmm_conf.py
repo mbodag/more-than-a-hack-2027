@@ -32,8 +32,8 @@ def signed_frames(match, ep, keep, values):
     return out
 
 
-def conf_features(match):
-    ep = controls.episodes(match)
+def conf_features(match, params=None):
+    ep = controls.episodes(match, params)
     if len(ep.get("start", ())) == 0:
         ep = {k: np.zeros(0) for k in controls.FIELDS}
     conf = ep["confidence"]
