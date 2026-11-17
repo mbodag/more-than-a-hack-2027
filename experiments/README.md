@@ -39,4 +39,5 @@ parallel sessions never edit the same file. Each record has:
 | #26 | `hmm_context` (+ windowed control evidence, gap context) | bench val 0.374 / 0.790 | superseded by `hmm_touch` |
 | #26 | `hmm_touch` (+ side of the last and next control) | bench val 0.453 / 0.815 | the method; later variants within noise |
 | #26 | `hmm_final` (`hmm_touch` refitted on train + val) | bench **test** 0.479 / 0.838 | candidate; BAR-ATH proxies pending |
-| — | control confidence probe (`possession/controls.py`, not an experiment) | train, clean: confidence ≥ 0.4 precision 0.763 vs 0.717 for the 2 m rule at the same side recall (0.88); ≥ 0.9 reaches 0.881 | worth feeding to the HMM; see `control-confidence-probe.md` |
+| — | control confidence probe (`possession/controls.py`, not an experiment) | train, clean: confidence ≥ 0.4 precision 0.763 vs 0.717 for the 2 m rule at the same side recall (0.88); ≥ 0.9 reaches 0.881 | fed to the HMM as `hmm_conf`; see `control-confidence-probe.md` |
+| — | `hmm_conf` (`hmm_touch` + confidence-weighted last/next control, pass-bys) | bench val 0.460 / 0.817 vs 0.453 / 0.815; train 0.478 vs 0.464; seed 0 worse | not kept: within noise |

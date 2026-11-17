@@ -62,8 +62,37 @@ controls; the 0.9 cut is 16 points more precise for 12 points less recall.
 - The event clock offset is estimated per match with a 2-frame step; recall uses ±1 s.
 - The rule scales are hand-set and were looked at only on training matches.
 
-## Verdict
+## Verdict (probe)
 
-Worth feeding to the HMM. Next: in `hmm_touch`, replace the two yes/no strengths with the
-side of the last and next control *weighted by confidence*, keep low-confidence episodes as a
-separate "ball passed an opponent" feature, and compare on validation.
+Worth feeding to the HMM.
+
+## `hmm_conf`: the confidence in the HMM
+
+- **Method**: `hmm_touch`'s features plus, from `possession/controls.py`: the signed confidence of
+  the control in progress; for controls with confidence >= 0.5, the signed confidence of the last
+  and next one, how long ago / until and decayed versions; for the rest ("the ball passed a
+  player"), the decayed side of the last and next one. Same HMM. `switch`, `dead` and `dead_min`
+  fixed at `hmm_touch`'s values (its grid was flat there); only `w` searched.
+- **Command**: `python -m possession.bench train hmm_conf` (degradation v2, seeds 0-2; 107 s)
+- **Metrics**: `experiments/metrics/bench/hmm_conf.json`; models `possession/models/hmm_conf.json`
+
+| | train (best) | val seed 0 | seed 1 | seed 2 | **val spellF1** | val macroF1 |
+|---|---|---|---|---|---|---|
+| `hmm_touch` | 0.464 | 0.464 | 0.464 | 0.431 | 0.453 | 0.815 |
+| `hmm_conf` (`w` 0.4) | 0.478 | 0.454 | 0.477 | 0.450 | **0.460** | 0.817 |
+
+**Not kept for now: within noise.** +0.015 on train and +0.007 on validation, but seed 0 is worse
+(-0.010), and team accuracy on live frames is unchanged (0.851-0.852). `hmm_split_w` (+0.003) and
+`hmm_mlp` (+0.016) were judged the same way in #26. The confidence probably adds little because
+`hmm_touch`'s logistic model already weighs distance and margin through its other features; the
+probe's gain is in precision at a fixed threshold, which the HMM never applies.
+
+Test not run. Ideas left: the score's rules as separate features (`together` was the strongest
+cue), and calibrating confidence on train instead of hand-set scales.
+
+## The viewer
+
+`python -m possession.viz` (and `--external`) now writes the control episodes too: a yellow ring
+on the controlling player (brighter and thicker the more confident), a "Ball controls" timeline row
+(home top, away bottom, opacity = confidence), and a "Ball control" panel with the slot, side and
+confidence, or the last control and how long ago. A "Controls" checkbox turns them off.
