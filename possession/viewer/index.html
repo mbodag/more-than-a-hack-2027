@@ -19,6 +19,8 @@
   <label><input type="checkbox" id="optOverlay" checked> Overlay</label>
   <label><input type="checkbox" id="optNumbers"> Slot numbers</label>
   <label><input type="checkbox" id="optLines"> Pitch lines</label>
+  <label title="Ball controls from possession/controls.py: a ring on the player, brighter the more confident">
+    <input type="checkbox" id="optControls" checked> Controls</label>
   <label title="The public 5 minutes. A pipeline sanity check only: never tune against it.">
     <input type="checkbox" id="optTruth"> Ground truth (sanity check only)</label>
 </header>
@@ -48,6 +50,8 @@
     <p class="dim small">Or drop submission-format CSVs anywhere on the page.</p>
     <h2>Tracking</h2>
     <div id="tracking"></div>
+    <h2>Ball control</h2>
+    <div id="control"></div>
     <h2>Smart Tagging</h2>
     <div id="tagging"></div>
   </aside>

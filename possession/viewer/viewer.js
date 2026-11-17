@@ -31,6 +31,22 @@
     for (var f = Math.max(0, event.s); f < Math.min(N, event.e); f++) tagMask[f] |= bit;
   });
 
+  // Ball controls (possession/controls.py): [start, end, slot, side, confidence], ends inclusive.
+  // Per frame: the episode in progress (-1 if none), and the last one that started before it.
+  var controls = M.controls || [];
+  var ctrlAt = new Int32Array(N).fill(-1), ctrlLast = new Int32Array(N).fill(-1);
+  controls.forEach(function (c, k) {
+    for (var f = Math.max(0, c[0]); f <= Math.min(N - 1, c[1]); f++) ctrlAt[f] = k;
+  });
+  for (var cf = 0, last = -1, ck = 0; cf < N; cf++) {
+    while (ck < controls.length && controls[ck][0] <= cf) last = ck++;
+    ctrlLast[cf] = last;
+  }
+  if (!controls.length) { $("optControls").checked = false; $("optControls").disabled = true; }
+  function showControls() { return controls.length && $("optControls").checked; }
+  // The episode under the playhead, if the toggle is on.
+  function controlAt(frame) { return showControls() && ctrlAt[frame] >= 0 ? controls[ctrlAt[frame]] : null; }
+
   // Label series: the public ground truth (behind its toggle) and every CSV dropped on the page.
   var truth = null;
   if (M.ground_truth) {
@@ -246,6 +262,13 @@
       if (numbers) { ctx.fillStyle = "#fff"; ctx.fillText(slot, X(tmp[0]), Y(tmp[1]) - r * 1.9); }
     }
 
+    var control = controlAt(frame);
+    if (control && Core.point(chunk, M, frame, control[2], tmp)) {
+      disc(ctx, X(tmp[0]), Y(tmp[1]), r * 2);
+      ctx.strokeStyle = "rgba(253,224,71," + (0.25 + 0.75 * control[4]) + ")";
+      ctx.lineWidth = 1 + 3 * control[4]; ctx.stroke();
+    }
+
     var missing = !ball || ball.frame !== frame;
     if (ball) {
       ctx.globalAlpha = missing ? Math.max(0.3, 1 - (frame - ball.frame) / (3 * FPS)) : 1;
@@ -314,6 +337,13 @@
         ctx.fillText(slot, pix[0] * s, pix[1] * s - r * 1.8);
       }
     }
+    var control = controlAt(frame);
+    if (control && Core.point(chunk, M, frame, control[2], tmp) &&
+        Core.project(chunk, frame, tmp[0], tmp[1], pix)) {
+      disc(ctx, pix[0] * s, pix[1] * s, r * 1.7);
+      ctx.strokeStyle = "rgba(253,224,71," + (0.25 + 0.75 * control[4]) + ")";
+      ctx.lineWidth = 1 + 3 * control[4]; ctx.stroke();
+    }
     if (ball && Core.project(chunk, frame, ball.x, ball.y, pix)) {
       var missing = ball.frame !== frame;
       ctx.globalAlpha = missing ? Math.max(0.3, 1 - (frame - ball.frame) / (3 * FPS)) : 1;
@@ -333,6 +363,7 @@
     var list = [{ kind: "ball", name: "Ball missing", h: 8 },
                 { kind: "count", name: "Players tracked", h: 16 },
                 { kind: "tags", name: "Smart Tagging", h: 15 }];
+    if (showControls()) list.push({ kind: "controls", name: "Ball controls", h: 12 });
     allSeries().forEach(function (series) {
       list.push({ kind: "labels", name: series.name, series: series, h: 10 });
     });
@@ -365,6 +396,19 @@
       if (mask & 1) { ctx.fillStyle = COLOUR.H; ctx.fillRect(x, y, 1, lane); }
       if (mask & 2) { ctx.fillStyle = COLOUR.A; ctx.fillRect(x, y + lane, 1, lane); }
       if (mask & 4) { ctx.fillStyle = COLOUR.D; ctx.fillRect(x, y + 2 * lane, 1, lane); }
+    } else if (row.kind === "controls") {
+      // Home on the top lane, away on the bottom; the more confident, the more opaque.
+      var best2 = { H: 0, A: 0 }, half = row.h / 2;
+      for (f = a; f < b; f++) {
+        var k = ctrlAt[f];
+        if (k >= 0 && controls[k][4] > best2[controls[k][3]]) best2[controls[k][3]] = controls[k][4];
+      }
+      ["H", "A"].forEach(function (side, lane2) {
+        if (!best2[side]) return;
+        ctx.globalAlpha = 0.15 + 0.85 * best2[side];
+        ctx.fillStyle = COLOUR[side]; ctx.fillRect(x, y + lane2 * half, 1, half);
+        ctx.globalAlpha = 1;
+      });
     } else {
       var counts = [0, 0, 0, 0], best = -1, codes = row.series.codes;
       for (f = a; f < b; f++) if (codes[f] !== Core.NO_LABEL) counts[codes[f]]++;
@@ -517,6 +561,22 @@
       "<div class=\"row\">" + chip("H", nHome[frame]) + chip("A", nAway[frame]) +
       "<span>" + (nHome[frame] + nAway[frame]) + " players tracked</span></div>");
 
+    if (controls.length) {
+      var now = ctrlAt[frame], prev = ctrlLast[frame];
+      var describe = function (c) {
+        return chip(c[3], c[3] + " · slot " + c[2]) + "<span>confidence " + c[4].toFixed(2) +
+          (c[4] < 0.5 ? " (ball passing by)" : "") + "</span>";
+      };
+      setHtml($("control"), now >= 0
+        ? "<div class=\"row\">" + describe(controls[now]) + "</div>"
+        : prev >= 0
+          ? "<div class=\"row dim\">Last: " + seconds(frame - controls[prev][1]) + " ago</div>" +
+            "<div class=\"row\">" + describe(controls[prev]) + "</div>"
+          : "<p class=\"dim\">No control yet.</p>");
+    } else {
+      setHtml($("control"), "<p class=\"dim\">Not written for this viewer.</p>");
+    }
+
     var active = M.events.filter(function (event) { return event.s <= frame && frame < event.e; });
     setHtml($("tagging"), active.length ? active.map(function (event) {
       var team = event.tags.Team;
@@ -641,6 +701,7 @@
     $(id).addEventListener("change", render);
   });
   $("optTruth").addEventListener("change", seriesChanged);
+  $("optControls").addEventListener("change", function () { overviewCache = null; layout(); });
 
   $("viewButtons").addEventListener("click", function (event) {
     var view = event.target.getAttribute("data-view");
