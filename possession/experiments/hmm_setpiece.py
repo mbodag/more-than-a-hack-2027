@@ -81,8 +81,13 @@ def bonus(match):
 
 
 def predict(match, **settings):
-    s = dict(hmm_final.DEFAULT, **settings)
-    model = hmm_final.MODEL
+    return predict_on(hmm_final, match, **settings)
+
+
+def predict_on(base, match, **settings):
+    """`base` (an experiment module with MODEL and DEFAULT) decoded with the set-piece bonuses."""
+    s = dict(base.DEFAULT, **settings)
+    model = base.MODEL
     models = model.load()
     T = hmm.transitions(models["rates"], switch=s["switch"], dead=s["dead"])
     E = model.emissions(match, s["w"]) + bonus(match)

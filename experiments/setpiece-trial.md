@@ -1,4 +1,4 @@
-# Set pieces from Smart Tagging (`hmm_setpiece`), a trial
+# Set pieces from Smart Tagging (`hmm_setpiece`, `hmm_setpiece_ms`), a trial
 
 **Issue:** none yet (a trial). **Branch:** `setpiece-trial`.
 
@@ -22,21 +22,26 @@ The bonuses are soft: strong tracking evidence still wins. The windows and bonus
 tags made from the bench matches' own event data, made to look like Smart Tagging (`N/A` on
 throw-ins, its timing, some tags dropped).
 
+`hmm_setpiece_ms` adds the same evidence to the submission's model, `hmm_final_ms`, with its models
+and settings unchanged. On a bench match (no Smart Tagging) each gives exactly its base model's
+labels, so on BAR-ATH every difference comes from the set-piece evidence alone.
+
 ## Command
 
 ```bash
 python -m possession run hmm_setpiece
+python -m possession run hmm_setpiece_ms
 ```
 
 ## Proxy metrics (BAR-ATH, label-free)
 
-| | `hmm_final` | `hmm_setpiece` | `hmm_final_ms` (submitted) |
-|---|---|---|---|
-| possessions | 384 | 377 | 408 |
-| dead-ball share | 0.403 | 0.417 | 0.355 |
-| possessions under 1 s | 8.1% | 8.5% | 6.6% |
-| Smart Tagging agreement | 0.803 | 0.815 | 0.814 |
-| warnings | none | none | none |
+| | `hmm_final` | `hmm_setpiece` | `hmm_final_ms` (submitted) | `hmm_setpiece_ms` |
+|---|---|---|---|---|
+| possessions | 384 | 377 | 408 | 406 |
+| dead-ball share | 0.403 | 0.417 | 0.355 | 0.372 |
+| possessions under 1 s | 8.1% | 8.5% | 6.6% | 6.7% |
+| Smart Tagging agreement | 0.803 | 0.815 | 0.814 | **0.821** |
+| warnings | none | none | none | none |
 
 Smart Tagging agreement uses its in-possession phases, not set pieces, so it is not circular.
 
@@ -46,6 +51,7 @@ The runner's format check and the organisers' validator passed.
 
 ## Verdict
 
-Trial. It looks right on the corner that motivated it, seen side by side in the viewer. It is not a
-candidate until benched, and it is built on `hmm_final`, not `hmm_final_ms`: the fair next version
-puts the same evidence on `hmm_final_ms`.
+Trial. It looks right on the corner that motivated it, seen side by side in the viewer, and on both
+base models it raises Smart Tagging agreement and the dead-ball share. `hmm_setpiece_ms` is the
+version to compare with the submission. Neither is a candidate until benched with set-piece tags
+made from the bench matches' own events.
