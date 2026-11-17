@@ -179,6 +179,14 @@ class ExternalMatch:
     track_speed = property(lambda self: self._a["track_speed"])
     track_team = property(lambda self: self._a["track_team"])
 
+    # The DFL's tracking has no held or stuck positions to remove: the cleaned tracking is the same.
+    track_xy_clean = property(lambda self: self._a["track_xy"])
+    track_speed_clean = property(lambda self: self._a["track_speed"])
+
+    @property
+    def track_removed(self):
+        return np.zeros(np.asarray(self.track_xy).shape[:2], dtype=np.uint8)
+
     @property
     def track_team_fixed(self):
         """The Match's per-frame sides. The DFL's own sides are right, keepers included, and its
