@@ -54,6 +54,38 @@ Write "none" if the method uses no labels._
   hidden-ball frames (about 130,000 frames, every fifth): alive or dead, and which side has the
   ball, from side-level team-shape features. Their parameters are committed in
   `possession/models/players_fill.json`.
+- Experiment `stoppages` fits one more logistic regression on every fifth frame of the training
+  matches, ball or not (about 340,000 frames): alive or dead. Its parameters are committed in
+  `possession/models/stoppages.json`.
+
+## Ball speed across providers
+
+`match.ball_speed` is the speed each provider's file gives, and the units differ: the DFL's is
+km/h (3.6 times the speed from its positions), the ATD's about 0.19 times it. A model fitted on the
+bench therefore sees BAR-ATH's ball as all but still on every frame (BAR-ATH's 90th percentile,
+3.4, is below the bench's in-play 10th, 6.9). `hmm_touch_ms` recomputes ball speed from the
+ball's positions in m/s on every match; on validation it scores spellF1 0.473 against
+`hmm_touch`'s 0.453 (within noise), and on BAR-ATH it gives 424 possessions and a 35% dead-ball
+share against 399 and 39%.
+
+The DFL's tracking also freezes the ball while it is out of play (speed exactly 0 on 99% of dead
+frames with a ball, against 1% on BAR-ATH), so on the bench a still ball means a dead ball, which
+BAR-ATH never shows. Dropping ball speed from `hmm_touch` costs 0.065 spellF1 on validation, but
+alive/dead F1 hardly moves (0.914 to 0.912): the speed's value is in play (passes), not in
+stoppages. With m/s speed the bench's alive/dead F1 rises to 0.937, part of which may be that
+frozen ball; the bench cannot tell.
+
+## Stoppages, and where the rest is
+
+`stoppages` (`possession/stoppage.py`) calls a stoppage on every frame from the players alone:
+how many are standing, how bunched they are, how many are tracked, the team shape, and whether
+the ball is tracked and beyond the lines, each also averaged over 1 to 10 s; no ball speed. It
+reaches validation spellF1 0.324 against `players_fill`'s 0.253, with the same alive/dead F1 as
+`hmm_touch` (0.912), so the HMM already finds stoppages as well as a dedicated model does.
+
+Two bench-only oracles bound what is left for `hmm_touch`: true dead balls with its sides score
+0.518 (+0.065), its dead balls with true sides 0.847 (+0.39). The remaining gains are in changes
+of possession in open play, not in dead balls (`experiments/stoppages.md`).
 
 ## Keepers on the right side
 

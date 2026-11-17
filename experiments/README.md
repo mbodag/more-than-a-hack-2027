@@ -39,3 +39,6 @@ parallel sessions never edit the same file. Each record has:
 | #26 | `hmm_context` (+ windowed control evidence, gap context) | bench val 0.374 / 0.790 | superseded by `hmm_touch` |
 | #26 | `hmm_touch` (+ side of the last and next control) | bench val 0.453 / 0.815 | the method; later variants within noise |
 | #26 | `hmm_final` (`hmm_touch` refitted on train + val) | bench **test** 0.479 / 0.838 | candidate; BAR-ATH proxies pending |
+| #24 | `stoppages` (dead balls from the players on every frame) | bench val 0.324 / 0.774; alive/dead F1 0.912, as `hmm_touch` | dropped as a method; see `stoppages.md` |
+| — | `oracle_stoppages`, `oracle_team` (bench only) | on `hmm_touch`: true dead balls 0.518, true sides 0.847 | the gains left are in open-play changes of possession |
+| — | `hmm_touch_ms` (ball speed from positions, m/s, on every match) | bench val 0.473 / 0.838; BAR-ATH 424 possessions, ST agreement 0.808 | fixes a unit mismatch; `hmm_final` should be refitted with it |
