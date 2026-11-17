@@ -53,10 +53,16 @@ def ball_features(match):
     with np.errstate(invalid="ignore"):
         dist = np.linalg.norm(xy - ball[:, None, :], axis=2)
     dist = np.where(np.isnan(dist), np.inf, dist)
-    near_home = np.minimum(dist[:, team == "H"].min(axis=1), CAP)
-    near_away = np.minimum(dist[:, team == "A"].min(axis=1), CAP)
+    if team.ndim == 2:   # one side per slot and frame (match.track_team_fixed)
+        near_home = np.minimum(np.where(team == "H", dist, np.inf).min(axis=1), CAP)
+        near_away = np.minimum(np.where(team == "A", dist, np.inf).min(axis=1), CAP)
+        slot_home = (team == "H").mean(axis=0) > 0.5   # the attack direction reads each slot's usual side
+    else:
+        near_home = np.minimum(dist[:, team == "H"].min(axis=1), CAP)
+        near_away = np.minimum(dist[:, team == "A"].min(axis=1), CAP)
+        slot_home = team == "H"
 
-    sign = team_shape.home_attacks_plus_x(xy, team == "H", team == "A",
+    sign = team_shape.home_attacks_plus_x(xy, slot_home, ~slot_home if team.ndim == 2 else team == "A",
                                           team_shape.blocks_of(match), n)
     x, y = ball[:, 0], ball[:, 1]
     out = np.maximum.reduce([np.zeros(n), -x, x - length, -y, y - width])
