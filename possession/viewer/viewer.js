@@ -23,7 +23,10 @@
 
   // Whole-match arrays, one value per frame.
   var ballPresent = Core.bytes(M.ball_present);
-  var nHome = Core.bytes(M.n_home), nAway = Core.bytes(M.n_away);
+  var raw = { nHome: Core.bytes(M.n_home), nAway: Core.bytes(M.n_away) };
+  var fixed = M.fixed ? { nHome: Core.bytes(M.fixed.n_home), nAway: Core.bytes(M.fixed.n_away),
+                          nMoved: Core.bytes(M.fixed.n_moved),
+                          nRemoved: Core.bytes(M.fixed.n_removed) } : null;
   var tagMask = new Uint8Array(N); // Smart Tagging phases covering the frame: 1 home, 2 away, 4 no team
   M.events.forEach(function (event) {
     var team = event.tags.Team;
@@ -57,6 +60,23 @@
   var video = $("video");
   var lines = Core.pitchLines(M.pitch);
   var tmp = [0, 0], pix = [0, 0];
+
+  // Sides: the ATD's own (raw) or ours after the fixes, when the viewer was written with them.
+  var useFixed = !!fixed;
+  function sideOf(chunk, frame, slot) { return Core.side(chunk, M, frame, slot - 1, useFixed); }
+  function moved(chunk, frame, slot) {
+    var ours = fixed ? Core.side(chunk, M, frame, slot - 1, true) : M.track_team[slot - 1];
+    return ours !== null && ours !== M.track_team[slot - 1];
+  }
+  function removedAt(chunk, frame, slot) {
+    return !!fixed && Core.side(chunk, M, frame, slot - 1, true) === null;
+  }
+  // A dashed red ring: in Raw ATD, a position the cleaning removes.
+  function removedRing(ctx, x, y, r) {
+    disc(ctx, x, y, r);
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
   // The playable range ----------------------------------------------------------------------------
 
@@ -240,9 +260,16 @@
     ctx.font = "600 " + Math.max(9, r * 1.2) + "px system-ui";
     for (var slot = 1; slot < M.n_objects; slot++) {
       if (!Core.point(chunk, M, frame, slot, tmp)) continue;
+      var gone = removedAt(chunk, frame, slot);
+      if (gone && useFixed) continue;
       disc(ctx, X(tmp[0]), Y(tmp[1]), r);
-      ctx.fillStyle = COLOUR[M.track_team[slot - 1]]; ctx.fill();
+      ctx.fillStyle = COLOUR[sideOf(chunk, frame, slot)]; ctx.fill();
       ctx.strokeStyle = "#000"; ctx.lineWidth = 1; ctx.stroke();
+      if (gone) removedRing(ctx, X(tmp[0]), Y(tmp[1]), r + 3);
+      else if (moved(chunk, frame, slot)) {
+        disc(ctx, X(tmp[0]), Y(tmp[1]), r + 3);
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+      }
       if (numbers) { ctx.fillStyle = "#fff"; ctx.fillText(slot, X(tmp[0]), Y(tmp[1]) - r * 1.9); }
     }
 
@@ -304,10 +331,17 @@
     for (var slot = 1; slot < M.n_objects; slot++) {
       if (!Core.point(chunk, M, frame, slot, tmp)) continue;
       if (!Core.project(chunk, frame, tmp[0], tmp[1], pix)) continue;
+      var lost = removedAt(chunk, frame, slot);
+      if (lost && useFixed) continue;
       // A ring at the feet, so the player in the picture stays visible.
       disc(ctx, pix[0] * s, pix[1] * s, r);
       ctx.strokeStyle = "rgba(0,0,0,0.7)"; ctx.lineWidth = 4; ctx.stroke();
-      ctx.strokeStyle = COLOUR[M.track_team[slot - 1]]; ctx.lineWidth = 2; ctx.stroke();
+      ctx.strokeStyle = COLOUR[sideOf(chunk, frame, slot)]; ctx.lineWidth = 2; ctx.stroke();
+      if (lost) removedRing(ctx, pix[0] * s, pix[1] * s, r + 5);
+      else if (moved(chunk, frame, slot)) {
+        disc(ctx, pix[0] * s, pix[1] * s, r + 5);
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+      }
       if (numbers) {
         ctx.fillStyle = "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
         ctx.strokeText(slot, pix[0] * s, pix[1] * s - r * 1.8);
@@ -333,6 +367,8 @@
     var list = [{ kind: "ball", name: "Ball missing", h: 8 },
                 { kind: "count", name: "Players tracked", h: 16 },
                 { kind: "tags", name: "Smart Tagging", h: 15 }];
+    if (fixed) list.splice(2, 0, { kind: "moved", name: "Side fixed", h: 8 },
+                           { kind: "removed", name: "Removed", h: 8 });
     allSeries().forEach(function (series) {
       list.push({ kind: "labels", name: series.name, series: series, h: 10 });
     });
@@ -355,10 +391,18 @@
         ctx.fillRect(x, y, 1, row.h);
       }
     } else if (row.kind === "count") {
-      var mid = (a + b) >> 1, total = nHome[mid] + nAway[mid];
+      var mid = (a + b) >> 1, total = raw.nHome[mid] + raw.nAway[mid];
       var bar = Math.min(1, total / 26) * row.h;
       ctx.fillStyle = total > 22 ? "#eab308" : "#a1a1aa"; // more than 22: the tracker duplicated someone
       ctx.fillRect(x, y + row.h - bar, 1, bar);
+    } else if (row.kind === "moved" || row.kind === "removed") {
+      var any = 0, counts = row.kind === "moved" ? fixed.nMoved : fixed.nRemoved;
+      for (f = a; f < b; f++) any += counts[f] > 0;
+      if (any) {
+        ctx.fillStyle = (row.kind === "moved" ? "rgba(255,255,255," : "rgba(239,68,68,") +
+                        (0.3 + 0.7 * any / (b - a)) + ")";
+        ctx.fillRect(x, y, 1, row.h);
+      }
     } else if (row.kind === "tags") {
       var mask = 0, lane = row.h / 3;
       for (f = a; f < b; f++) mask |= tagMask[f];
@@ -512,10 +556,18 @@
       : ball.frame === frame ? "Ball tracked"
       : "<span class=\"alert\">Ball not tracked for " + (frame - ball.frame) + " frames (" +
         seconds(frame - ball.frame) + ")</span>";
+    var counts = useFixed ? fixed : raw;
+    function slots(k) { return k + " slot" + (k === 1 ? "" : "s"); }
+    var sidesLine = !fixed ? ""
+      : "<div class=\"row dim\">" + (useFixed ? "Cleaned" : "Raw ATD") + " · " +
+        slots(fixed.nMoved[frame]) + " moved to the other side (white ring) · " +
+        slots(fixed.nRemoved[frame]) + " removed: off camera or stuck" +
+        (useFixed ? "" : " (dashed red ring)") + "</div>";
     setHtml($("tracking"),
       "<div class=\"row\">" + ballLine + "</div>" +
-      "<div class=\"row\">" + chip("H", nHome[frame]) + chip("A", nAway[frame]) +
-      "<span>" + (nHome[frame] + nAway[frame]) + " players tracked</span></div>");
+      "<div class=\"row\">" + chip("H", counts.nHome[frame]) + chip("A", counts.nAway[frame]) +
+      "<span>" + (counts.nHome[frame] + counts.nAway[frame]) + " players tracked</span></div>" +
+      sidesLine);
 
     var active = M.events.filter(function (event) { return event.s <= frame && frame < event.e; });
     setHtml($("tagging"), active.length ? active.map(function (event) {
@@ -572,6 +624,7 @@
   function seriesChanged() {
     var select = $("jumpSeries"), keep = select.value;
     var options = [["ball", "Ball lost / found"], ["tags", "Smart Tagging phase"]];
+    if (fixed) options.splice(1, 0, ["moved", "Side fixed"], ["removed", "Removed"]);
     allSeries().forEach(function (s, k) { options.push(["s" + k, s.name]); });
     select.innerHTML = options.map(function (o) {
       return "<option value=\"" + o[0] + "\">" + esc(o[1]) + "</option>";
@@ -600,7 +653,8 @@
         }
       });
     } else {
-      var values = what === "ball" ? ballPresent : allSeries()[parseInt(what.slice(1), 10)].codes;
+      var values = what === "ball" ? ballPresent : what === "moved" ? fixed.nMoved
+                 : what === "removed" ? fixed.nRemoved : allSeries()[parseInt(what.slice(1), 10)].codes;
       for (var f = frame + direction; f >= BLOCKS[0][0] && f <= LAST_BLOCK[1]; f += direction) {
         if (values[f] !== values[f - 1] && playable(f) && playable(f - 1)) { target = f; break; }
       }
@@ -617,6 +671,7 @@
     if (event.key === " ") setPlaying(!state.playing);
     else if (event.key === "ArrowRight") step(event.shiftKey ? FPS : 1);
     else if (event.key === "ArrowLeft") step(event.shiftKey ? -FPS : -1);
+    else if ((event.key === "s" || event.key === "S") && fixed) setSides(!useFixed);
     else return;
     event.preventDefault();
   });
@@ -641,6 +696,19 @@
     $(id).addEventListener("change", render);
   });
   $("optTruth").addEventListener("change", seriesChanged);
+
+  function setSides(on) {
+    useFixed = on;
+    Array.prototype.forEach.call($("sideButtons").children, function (button) {
+      button.classList.toggle("on", (button.getAttribute("data-sides") === "fixed") === on);
+    });
+    render();
+  }
+  if (fixed) $("sideButtons").hidden = false;
+  $("sideButtons").addEventListener("click", function (event) {
+    var which = event.target.getAttribute("data-sides");
+    if (which) { setSides(which === "fixed"); event.target.blur(); }
+  });
 
   $("viewButtons").addEventListener("click", function (event) {
     var view = event.target.getAttribute("data-view");

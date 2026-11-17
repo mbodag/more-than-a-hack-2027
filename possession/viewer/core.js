@@ -13,7 +13,7 @@
     return out;
   }
 
-  // payload: {first, n, xy, h, carry} as written by viz.chunk_js (little-endian arrays).
+  // payload: {first, n, xy, h, carry, sides?} as written by viz.chunk_js (little-endian arrays).
   function decodeChunk(payload) {
     return {
       first: payload.first,
@@ -21,7 +21,17 @@
       xy: new Uint16Array(bytes(payload.xy).buffer),
       h: new Float32Array(bytes(payload.h).buffer),
       carry: payload.carry,
+      sides: payload.sides ? bytes(payload.sides) : null,
     };
+  }
+
+  // Side of track slot `slot` (0-based) on `frame`: the ATD's own ("H" or "A", from the metadata),
+  // or with `fixed` ours for that frame when the chunk carries it: "H", "A", or null where we
+  // removed the position (held off camera or stuck).
+  function side(chunk, meta, frame, slot, fixed) {
+    if (!fixed || !chunk.sides) return meta.track_team[slot];
+    var code = chunk.sides[(frame - chunk.first) * (meta.n_objects - 1) + slot];
+    return code === 1 ? "H" : code === 2 ? "A" : null;
   }
 
   function unstep(step, q) {
@@ -143,6 +153,7 @@
 
   var api = {
     LABELS: LABELS, NO_LABEL: NO_LABEL, bytes: bytes, decodeChunk: decodeChunk, point: point,
+    side: side,
     lastBall: lastBall, project: project, parseLabels: parseLabels, matchClock: matchClock,
     clockText: clockText, pitchLines: pitchLines,
   };
