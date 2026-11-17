@@ -1,0 +1,66 @@
+{
+  "dead_ball_share": 0.3969,
+  "experiment": "hmm_combo",
+  "graded_frames": 158857,
+  "halves": [
+    {
+      "all_x": false,
+      "first": 11185,
+      "half": 1,
+      "last": 90651,
+      "n_spells": 166
+    },
+    {
+      "all_x": false,
+      "first": 110808,
+      "half": 2,
+      "last": 190197,
+      "n_spells": 196
+    }
+  ],
+  "home_share": 0.6213,
+  "label_changes_per_min": 4.6457,
+  "label_share": {
+    "A": 0.2284,
+    "D": 0.3969,
+    "H": 0.3747,
+    "X": 0.0
+  },
+  "n_spells": 362,
+  "short_spell_share": 0.0829,
+  "smart_tagging": {
+    "agreement": 0.8315,
+    "coverage": 0.4978
+  },
+  "spell_length_s": {
+    "max": 79.64,
+    "mean": 10.5865,
+    "median": 4.64,
+    "min": 0.2,
+    "p10": 1.08,
+    "p90": 28.972
+  },
+  "spells_per_min": 3.4182,
+  "thresholds": {
+    "dead_ball_share": [
+      0.2,
+      0.5
+    ],
+    "home_share": [
+      0.25,
+      0.75
+    ],
+    "max_short_spell_share": 0.1,
+    "mean_spell_s": [
+      5.0,
+      30.0
+    ],
+    "min_smart_tagging_agreement": 0.6,
+    "short_spell_s": 1.0,
+    "spells_per_min": [
+      1.5,
+      6.0
+    ]
+  },
+  "warnings": []
+}

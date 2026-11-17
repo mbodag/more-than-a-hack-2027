@@ -184,3 +184,24 @@ def test_rich_run_lengths_and_spots():
     assert list(after) == [0, 3, 2, 1, 0, 1]
     d = hmm_rich.spot_distance(np.array([0.5, 52.5, 30.0]), np.array([0.0, 34.0, 20.0]), 105, 68)
     assert d[0] == 0.5 and d[1] == 0.0 and d[2] > 10
+
+
+def drop(s, blocks=None, k=4):
+    labels = np.array(list(s))
+    return "".join(hmm.drop_dead_islands(labels, blocks or [(0, len(s) - 1)], k))
+
+
+def test_a_short_possession_between_two_stoppages_becomes_dead_ball():
+    assert drop("DDDHHHDDD") == "DDDDDDDDD"
+    assert drop("DDDHAHDDD") == "DDDDDDDDD"        # a flicker of both sides is one stretch
+
+
+def test_a_possession_long_enough_or_touching_play_is_kept():
+    assert drop("DDHHHHDD") == "DDHHHHDD"          # 4 frames: not shorter than the minimum
+    assert drop("HHHDDDHH") == "HHHDDDHH"          # runs to the block edge on one side
+    assert drop("DDHHDD", k=1) == "DDHHDD"         # off
+
+
+def test_stretches_are_judged_inside_each_block():
+    # D H | H D across a halftime boundary: each H touches its block's edge, so both stay.
+    assert drop("DHHDDHHD", blocks=[(0, 2), (3, 7)]) == "DHHDDDDD"
