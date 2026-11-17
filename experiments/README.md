@@ -49,3 +49,4 @@ parallel sessions never edit the same file. Each record has:
 | — | `hmm_conf_ms` (`hmm_touch_ms` + tuned control features) | bench val 0.484 / 0.840 vs 0.473 / 0.838; **test 0.503 / 0.860 vs 0.498 / 0.861** (`hmm_touch_ms`, first test run) | small gain within noise; free to add if `hmm_final` is refitted |
 | — | `hmm_conf_ms_hand` (the same, hand-set scales) | bench val 0.488 / 0.841 | tuning the scales did not help the HMM |
 | — | `hmm_combo` (`hmm_touch_ms` + control confidence + cross-fitted P(alive) + cleaned tracking) | bench val 0.495 / 0.848 vs 0.473 / 0.838; ablations 0.487 (no conf), 0.490 (no alive); BAR-ATH ST agreement 0.832 | best on validation; needs refit + one test run; see `hmm-combo.md` |
+| — | `hmm_combo_final` (`hmm_combo` refitted on train + val) | bench **test** 0.515 / 0.870 vs `hmm_final_ms` 0.497 / 0.860, ahead on all 6 match-seed pairs; BAR-ATH ST agreement 0.837 vs 0.814 | strongest candidate; see `hmm-combo.md` |

@@ -44,8 +44,23 @@ alone. Alive/dead F1 0.944-0.956 per seed.
 like for like. The cleaning and keeper fix change BAR-ATH by two possessions and nothing in the
 agreement: as the HMM uses them, they hardly matter.
 
+## `hmm_combo_final`: refitted on train + validation, test run once
+
+`hmm_combo`'s method and settings refitted on the five non-test matches, seeds 0-2, alive models
+cross-fitted over the same five (`possession/experiments/hmm_combo_final.py`).
+
+| bench **test** (J03WPY, J03WR9 × seeds 0-2) | spellF1 | macroF1 | per match and seed |
+|---|---|---|---|
+| `hmm_final_ms` (submitted) | 0.497 | 0.860 | 0.504 0.491 / 0.493 0.491 / 0.468 0.535 |
+| `hmm_conf_ms` (#33) | 0.503 | 0.860 | |
+| **`hmm_combo_final`** | **0.515** | **0.870** | 0.513 0.507 / 0.501 0.517 / 0.500 0.549 |
+
+Ahead of `hmm_final_ms` on all six match-and-seed pairs, by 0.008 to 0.032. On BAR-ATH: 353
+possessions (408), median 4.64 s, dead share 40.6% (35.5%), Smart Tagging agreement **0.837**
+(0.814).
+
 ## Verdict
 
-- `hmm_combo`: best on validation so far. To become a candidate it needs the `hmm_final` treatment
-  (refit on train + validation, seeds 0-2) and one test run: not done.
+- `hmm_combo_final`: the strongest candidate, on validation and on the single test run. Replacing
+  the submission is #5's decision.
 - The cleaned tracking stays in (it is right, and costs nothing), but is not where the gain is.
