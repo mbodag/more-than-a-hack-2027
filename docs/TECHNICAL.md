@@ -35,24 +35,42 @@ Write "none" if the method uses no labels._
   ball, from side-level team-shape features. Their parameters are committed in
   `possession/models/players_fill.json`.
 
+## Tracking that sees nobody, removed
+
+Two faults of the ATD, both almost only in the keeper slots (Track 24 home, Track 46 away), each
+confirmed by eye on candidate frames of BAR-ATH (`possession/clean.py`, `match.track_xy_clean`):
+
+- **Held off camera.** The keeper slots go on being tracked when the camera cannot see the keeper:
+  projected through the homography, their positions fall outside the picture on about half their
+  graded frames (58% home, 47% away), against 0.01% for outfield slots. There they barely move
+  (median 0.05 m a second, against 0.5-0.7 m on camera): the tracker holds a last guess. Every
+  position outside the picture is removed.
+- **Stuck.** A track can freeze where nobody is, also on camera: both keeper slots for the last
+  minutes of the match, and the home one for minutes in the second half. Every stretch over which
+  a slot moves less than 0.3 m (along x and along y) for 30 s is removed. On BAR-ATH no outfield
+  slot is caught, even in stoppages where everyone stands still (they move 0.5-1.5 m).
+
+On BAR-ATH's graded frames this removes 134,055 slot-frames off camera (140 of them outfield) and
+27,821 stuck (all keeper slots): 5% of all tracked slot-frames.
+
 ## Keepers on the right side
 
-The ATD files a keeper under the wrong team on about 6% of the graded frames its keeper slots
-track (17,405 of 294,534).
 Its metadata gives each side one keeper slot (Track 24 home, Track 46 away), and the two keepers'
 tracklets land in either: a keeper standing in his own goal is often in the other side's slot,
 sometimes while his own slot tracks him too. A slot's side is fixed, so the keeper counts for the
 wrong team exactly when he has the ball (saves, goal kicks, build-up).
 
-The rule (`possession/keepers.py`, `match.track_team_fixed`): each tracklet of a keeper slot
+The rule (`possession/keepers.py`, `match.track_team_fixed`), on the cleaned tracking: each
+tracklet of a keeper slot
 belongs to the side defending the end it stands in (its median x, cut at the halves). Which side
 defends which end is read at each half's kick-off, tagged by Smart Tagging, where every player is
 in their own half: the lower median x of the outfield slots defends x = 0. Outfield slots are left
 alone: only 3 outfield tracklets of 10 s or more live in the other side's keeper area.
 
-On BAR-ATH's graded frames this moves 17,405 tracked slot-frames (16,392 of them in the away
-keeper slot) and changes the nearest player's side on 1,306 of the 94,214 frames with a ball.
-The team-shape features still use the metadata's sides.
+Of the keeper slots' 132,798 graded slot-frames left after cleaning, 9,137 (7%) are given to the
+other side (1,332 home slot, 7,805 away slot). With the cleaning, the nearest player's side changes
+on 1,346 of the 94,214 frames with a ball. The team-shape features still use the raw tracking and
+the metadata's sides, as their models were fitted on them.
 
 ## Possession rules implemented
 

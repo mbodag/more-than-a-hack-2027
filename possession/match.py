@@ -178,11 +178,22 @@ def _build_team_shape(inputs):
                               games.GAMES[games.GAME]["pitch"])
 
 
+def _build_tracking_clean(inputs):
+    from possession import clean
+    from starter import load_homography  # organisers' loader: imported, never edited
+
+    path = inputs.path(SOURCE, "homography")
+    homography, _, valid = load_homography.load(data_dir=os.path.dirname(os.path.dirname(path)))
+    tracking = inputs.item("tracking")
+    return clean.clean(tracking["track_xy"], tracking["track_speed"], homography, valid,
+                       games.GAMES[games.GAME]["pitch"])
+
+
 def _build_track_team_fixed(inputs):
     from possession import keepers
     from possession.fill import half_blocks
 
-    xy = inputs.item("tracking")["track_xy"]
+    xy = inputs.item("tracking_clean")["track_xy"]
     team = inputs.item("track_team")
     slots = read_keeper_slots(inputs.path(SOURCE, "atd_meta"))
     tagging = inputs.item("smart_tagging")
@@ -201,6 +212,7 @@ def _build_smart_tagging(inputs):
     return paint_smart_tagging(events, team_names, games.source_frames(SOURCE))
 
 
+from possession.clean import VERSION as _CLEAN_VERSION  # noqa: E402
 from possession.keepers import VERSION as _KEEPERS_VERSION  # noqa: E402
 from possession.team_shape import VERSION as _TEAM_SHAPE_VERSION  # noqa: E402
 
@@ -218,8 +230,11 @@ ITEMS = {item.name: item for item in (
     Item("smart_tagging", version=1, build=_build_smart_tagging,
          raw=((SOURCE, "smart_tagging"), (SOURCE, "atd_meta")),
          doc="Smart Tagging phases and their team, per frame and code"),
-    Item("track_team_fixed", version=_KEEPERS_VERSION, build=_build_track_team_fixed,
-         raw=((SOURCE, "atd_meta"),), deps=("tracking", "track_team", "smart_tagging"),
+    Item("tracking_clean", version=_CLEAN_VERSION, build=_build_tracking_clean,
+         raw=((SOURCE, "homography"),), deps=("tracking",),
+         doc="track positions with off-camera and stuck ones removed (possession/clean.py)"),
+    Item("track_team_fixed", version=_KEEPERS_VERSION + 1, build=_build_track_team_fixed,
+         raw=((SOURCE, "atd_meta"),), deps=("tracking_clean", "track_team", "smart_tagging"),
          doc="side of each track slot on each frame, keepers put right (possession/keepers.py)"),
 )}
 
@@ -285,9 +300,26 @@ class Match:
         return self.item("track_team")
 
     @property
+    def track_xy_clean(self):
+        """(n_frames, n_tracks, 2) float32: track_xy with positions held off camera or stuck in
+        place removed (NaN); possession/clean.py."""
+        return self.item("tracking_clean")["track_xy"]
+
+    @property
+    def track_speed_clean(self):
+        """(n_frames, n_tracks) float32: track_speed, NaN where track_xy_clean removed it."""
+        return self.item("tracking_clean")["track_speed"]
+
+    @property
+    def track_removed(self):
+        """(n_frames, n_tracks) uint8: why a position was removed: clean.KEPT, OFF_CAMERA, STILL."""
+        return self.item("tracking_clean")["removed"]
+
+    @property
     def track_team_fixed(self):
         """(n_frames, n_tracks) str: "H" or "A" for each slot on each frame, with the keeper slots'
-        tracklets given to the side defending the end they stand in (possession/keepers.py)."""
+        tracklets (of the cleaned tracking) given to the side defending the end they stand in
+        (possession/keepers.py)."""
         return self.item("track_team_fixed")
 
     # Team shape: what the players say, side by side, ball or no ball.

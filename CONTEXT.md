@@ -99,5 +99,9 @@ starts using it.
   A slot holds a series of tracks over the match, not one player.
 - **Keeper slot**: the one slot of each side that the ATD's metadata marks as the keeper's
   (Track 24 home, Track 46 away). Either keeper's tracks can land in either keeper slot.
+- **Cleaned tracking** (`track_xy_clean`): the ATD's track positions without those held off camera
+  (outside the video picture) or stuck in place (under 0.3 m of movement for 30 s), which see
+  nobody (`possession/clean.py`).
 - **Fixed side** (`track_team_fixed`): a slot's side on each frame, with every track of a keeper
-  slot given to the side defending the end it stands in (`possession/keepers.py`).
+  slot, in the cleaned tracking, given to the side defending the end it stands in
+  (`possession/keepers.py`).
