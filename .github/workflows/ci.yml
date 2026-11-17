@@ -38,4 +38,4 @@ jobs:
           shopt -s nullglob
           files=$(git ls-files '*.csv' | grep -v -E '^(evaluation|experiments|outputs)/' || true)
           if [ -z "$files" ]; then echo "No submission CSV committed yet"; exit 0; fi
-          for f in $files; do python evaluation/validate_submission.py "$f"; done
+          while IFS= read -r f; do python evaluation/validate_submission.py "$f"; done <<< "$files"   # names have spaces
