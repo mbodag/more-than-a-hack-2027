@@ -131,6 +131,27 @@ def viterbi_dead_min(log_emit, log_trans, k):
     return path
 
 
+def drop_dead_islands(labels, blocks, min_frames):
+    """Copy of `labels` where every play stretch shorter than `min_frames` with a stoppage both
+    right before and right after it, inside one block, becomes "D".
+
+    A play stretch is a maximal run of anything but "D", so H and A flickering together count as
+    one stretch. Stretches touching a block's edge are kept: there is no stoppage on that side.
+    The point is long breaks (cooling breaks, injuries) where a moment of possession is invented.
+    """
+    out = np.array(labels, copy=True)
+    if min_frames <= 1:
+        return out
+    for first, last in blocks:
+        alive = out[first:last + 1] != "D"
+        edges = np.diff(np.concatenate(([0], alive.astype(np.int8), [0])))
+        starts, stops = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
+        for start, stop in zip(starts, stops):
+            if start > 0 and stop < len(alive) and stop - start < min_frames:
+                out[first + start:first + stop] = "D"
+    return out
+
+
 def decode(log_emit, log_trans, blocks, outside="D", dead_min=1):
     """(n,) "H"/"A"/"D" labels: Viterbi on each block (first, last inclusive) separately, never
     across halftime; frames outside every block get `outside`. `dead_min` > 1: every stoppage
