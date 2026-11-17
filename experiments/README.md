@@ -34,7 +34,7 @@ parallel sessions never edit the same file. Each record has:
 | — | `baseline_smooth50` (organisers') | published full-match spellF1 0.2433 | the floor to beat |
 | #20 | `nearest_smooth` (the same baseline, window from the bench) | bench val spellF1 0.184, macroF1 0.455 (degradation v1); 0.176 / 0.444 (v2) | the bench's reference point |
 | #22 | `players_fill` (ball gaps read from the team shape) | bench val spellF1 0.253, macroF1 0.521 (v2); BAR-ATH: Smart Tagging agreement 0.727 vs 0.714, sub-second possessions 15% vs 21% | candidate; the bench overstates its gain on BAR-ATH |
-| — | `players_fill_keepers` (the same, keepers put on the right side) | bench: identical to `players_fill` (its sides are already right); BAR-ATH: Smart Tagging agreement 0.734 vs 0.727, possessions 537 vs 560, sub-second possessions 15.1% vs 14.6% | candidate; see `players-fill-keepers.md` |
+| — | `players_fill_keepers` (the same, on cleaned tracking with keepers put on the right side) | bench: identical to `players_fill` (its sides are already right); BAR-ATH: Smart Tagging agreement 0.734 vs 0.727, possessions 535 vs 560, sub-second possessions 15.1% vs 14.6% | candidate; see `players-fill-keepers.md` |
 | #26 | `hmm_viterbi` (3-state HMM, Viterbi per half) | bench val spellF1 0.335, macroF1 0.774 (v2) | superseded by `hmm_context` |
 | #26 | `hmm_context` (+ windowed control evidence, gap context) | bench val 0.374 / 0.790 | superseded by `hmm_touch` |
 | #26 | `hmm_touch` (+ side of the last and next control) | bench val 0.453 / 0.815 | the method; later variants within noise |

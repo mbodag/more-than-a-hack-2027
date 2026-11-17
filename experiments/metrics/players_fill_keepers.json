@@ -8,7 +8,7 @@
       "first": 11185,
       "half": 1,
       "last": 90651,
-      "n_spells": 279
+      "n_spells": 277
     },
     {
       "all_x": false,
@@ -18,29 +18,29 @@
       "n_spells": 258
     }
   ],
-  "home_share": 0.5749,
-  "label_changes_per_min": 6.2131,
+  "home_share": 0.5744,
+  "label_changes_per_min": 6.1943,
   "label_share": {
-    "A": 0.3151,
+    "A": 0.3155,
     "D": 0.2588,
-    "H": 0.4261,
+    "H": 0.4257,
     "X": 0.0
   },
-  "n_spells": 537,
-  "short_spell_share": 0.1508,
+  "n_spells": 535,
+  "short_spell_share": 0.1514,
   "smart_tagging": {
     "agreement": 0.7344,
     "coverage": 0.4978
   },
   "spell_length_s": {
     "max": 64.52,
-    "mean": 8.7704,
-    "median": 5.28,
+    "mean": 8.8032,
+    "median": 5.36,
     "min": 0.04,
     "p10": 0.68,
-    "p90": 22.008
+    "p90": 22.032
   },
-  "spells_per_min": 5.0706,
+  "spells_per_min": 5.0517,
   "thresholds": {
     "dead_ball_share": [
       0.2,
@@ -63,6 +63,6 @@
     ]
   },
   "warnings": [
-    "short_spell_share 0.1508 is above 0.1 (possessions under 1.0 s)"
+    "short_spell_share 0.1514 is above 0.1 (possessions under 1.0 s)"
   ]
 }

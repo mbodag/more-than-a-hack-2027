@@ -10,7 +10,10 @@ opened that way cannot fetch data files, so the data is written as scripts next 
                      counts, the public ground truth, where the video is, the ball controls
                      (possession/controls.py)
     chunks/cNNNN.js  positions and homography for frames [NNNN * 1500, (NNNN + 1) * 1500), loaded
-                     as the playhead reaches them; only chunks touching a half are written
+                     as the playhead reaches them; only chunks touching a half are written. With
+                     our fixes (match.track_team_fixed, match.track_removed), each slot's side
+                     on each frame too, 0 where we removed the position, so the page can switch
+                     between the raw ATD and our cleaned tracking
 
 The frame index is the tactical video's throughout: frame i of the page is submission row i.
 
@@ -92,12 +95,21 @@ def _b64(array):
     return base64.b64encode(np.ascontiguousarray(array).tobytes()).decode("ascii")
 
 
-def chunk_js(index, steps, homography, carry, chunk_frames=CHUNK_FRAMES):
+def side_codes(track_team, removed=None):
+    """Sides as bytes for the page: 1 home, 2 away, 0 where `removed` (same shape) is true."""
+    codes = np.where(np.asarray(track_team) == "H", 1, 2).astype(np.uint8)
+    if removed is not None:
+        codes[np.asarray(removed, dtype=bool)] = 0
+    return codes
+
+
+def chunk_js(index, steps, homography, carry, chunk_frames=CHUNK_FRAMES, sides=None):
     """The script for one chunk: a call to the page's viewerChunk(index, payload).
 
     steps       (n, objects, 2) uint16 from quantise(), for frames index * chunk_frames onwards
     homography  (n, 3, 3): pitch fractions -> pixels, NaN where there is none
     carry       [frame, x step, y step] of the last tracked ball before this chunk, or None
+    sides       (n, tracks) side codes from side_codes() (1 home, 2 away, 0 removed), or None
     """
     payload = {
         "first": index * chunk_frames,
@@ -106,6 +118,8 @@ def chunk_js(index, steps, homography, carry, chunk_frames=CHUNK_FRAMES):
         "h": _b64(np.asarray(homography, dtype="<f4")),
         "carry": carry,
     }
+    if sides is not None:
+        payload["sides"] = _b64(np.asarray(sides, dtype=np.uint8))
     return "viewerChunk({}, {});\n".format(index, json.dumps(payload))
 
 
@@ -119,6 +133,9 @@ def read_chunk_js(text):
     n = payload["n"]
     payload["xy"] = np.frombuffer(base64.b64decode(payload["xy"]), dtype="<u2").reshape(n, -1, 2)
     payload["h"] = np.frombuffer(base64.b64decode(payload["h"]), dtype="<f4").reshape(n, 3, 3)
+    if "sides" in payload:
+        payload["sides"] = np.frombuffer(base64.b64decode(payload["sides"]),
+                                         dtype=np.uint8).reshape(n, -1)
     return int(index), payload
 
 
@@ -169,13 +186,16 @@ def control_rows(match):
 def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography, events, blocks,
                  pitch, fps, video_path, ground_truth=None, chunk_frames=CHUNK_FRAMES,
                  say=print, game=games.GAME, predictions=None, view=None, truth_on=False,
-                 controls=None):
+                 track_team_fixed=None, removed=None, controls=None):
     """Write the page and its data into `out_dir`; returns the path of index.html.
 
     ball_xy (n, 2) and track_xy (n, tracks, 2) are in metres, NaN where not tracked, as the Match
     gives them; homography is (n, 3, 3); events come from tagging_events(). video_path None means
     the match has no video. predictions is [(name, labels)], shown as if their CSVs were dropped;
     view ("both", "video", "pitch") is the starting view; truth_on ticks the ground truth.
+    track_team_fixed (n, tracks) is each slot's side on each frame after our fixes (keepers put on
+    the right side) and removed (n, tracks) bool where we removed the position (off camera, stuck);
+    with them, the page can switch between the raw ATD and our cleaned tracking.
     controls is control_rows() of possession/controls.py's episodes, or None.
     """
     n_frames = len(ball_xy)
@@ -185,6 +205,10 @@ def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography,
     ball_present = steps[:, 0, 0] != Q_MISSING
     tracked = steps[:, 1:, 0] != Q_MISSING
     last_ball = last_ball_frame(ball_present)
+    fixed = None if track_team_fixed is None else np.asarray(track_team_fixed)
+    gone = np.zeros(tracked.shape, dtype=bool) if removed is None else np.asarray(removed, bool)
+    sides = None if fixed is None else side_codes(fixed, gone & tracked)
+    kept = tracked & ~gone
 
     chunk_dir = os.path.join(out_dir, "chunks")
     if os.path.isdir(chunk_dir):
@@ -199,7 +223,8 @@ def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography,
         carry = None if before < 0 else [before] + steps[before, 0].tolist()
         with open(os.path.join(chunk_dir, chunk_name(index)), "w") as handle:
             handle.write(chunk_js(index, steps[first:last], homography[first:last], carry,
-                                  chunk_frames))
+                                  chunk_frames,
+                                  None if sides is None else sides[first:last]))
     say("    {} chunks of {} frames".format(len(indices), chunk_frames))
 
     meta = {
@@ -223,6 +248,12 @@ def write_viewer(out_dir, ball_xy, track_xy, track_team, team_names, homography,
         "n_home": _b64((tracked & (track_team == "H")).sum(axis=1).astype(np.uint8)),
         "n_away": _b64((tracked & (track_team == "A")).sum(axis=1).astype(np.uint8)),
         "ground_truth": ground_truth,
+        "fixed": None if fixed is None else {
+            "n_home": _b64((kept & (fixed == "H")).sum(axis=1).astype(np.uint8)),
+            "n_away": _b64((kept & (fixed == "A")).sum(axis=1).astype(np.uint8)),
+            "n_moved": _b64((kept & (fixed != track_team[None, :])).sum(axis=1).astype(np.uint8)),
+            "n_removed": _b64((tracked & gone).sum(axis=1).astype(np.uint8)),
+        },
         "controls": controls or [],
         "video": {"uri": pathlib.Path(video_path).resolve().as_uri() if video_path else None,
                   "path": video_path, "width": VIDEO_SIZE[0], "height": VIDEO_SIZE[1]},
@@ -252,7 +283,8 @@ def build(out_dir=OUT_DIR, say=print):
         out_dir, match.ball_xy, match.track_xy, match.track_team, team_names, homography, events,
         blocks=half_blocks(), pitch=games.GAMES[games.GAME]["pitch"],
         fps=games.GAMES[games.GAME]["fps"], video_path=match.video_path,
-        ground_truth=read_ground_truth(), say=say, controls=control_rows(match))
+        ground_truth=read_ground_truth(), say=say, track_team_fixed=match.track_team_fixed,
+        removed=match.track_removed != 0, controls=control_rows(match))
     if not os.path.isfile(match.video_path):
         say("    no video at {}: the page will show the pitch only until it is there".format(
             match.video_path))

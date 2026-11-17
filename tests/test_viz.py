@@ -186,3 +186,63 @@ def test_the_page_reads_a_submission_csv_and_rejects_anything_else():
     assert out["good"] == [1, 2, 3, 0]
     assert "found 1" in out["short"] and "line 3" in out["wrong"]
     assert out["clock"] == {"half": 2, "seconds": 45 * 60 + 0.4}
+
+
+def write_with_fixed_sides(tmp_path):
+    ball, tracks, homography = synthetic()
+    team = np.array(["H", "A", "A"])
+    fixed = np.repeat(team[None, :], N_FRAMES, axis=0)
+    fixed[20:25, 2] = "H"          # slot 3 moved to home on frames 20-24
+    removed = np.zeros((N_FRAMES, N_TRACKS), dtype=bool)
+    removed[26:28, 0] = True       # slot 1 removed on frames 26-27
+    viz.write_viewer(str(tmp_path), ball, tracks, team, ("Home FC", "Away FC"), homography, [],
+                     blocks=BLOCKS, pitch=PITCH, fps=25, video_path=None, chunk_frames=CHUNK,
+                     say=lambda message: None, track_team_fixed=fixed, removed=removed)
+    return tracks, fixed, removed
+
+
+def test_fixed_sides_travel_in_the_chunks_and_meta(tmp_path):
+    tracks, fixed, removed = write_with_fixed_sides(tmp_path)
+    _, payload = viz.read_chunk_js((tmp_path / "chunks" / "c0002.js").read_text())
+    tracked = ~np.isnan(tracks[:, :, 0])
+    np.testing.assert_array_equal(payload["sides"],
+                                  viz.side_codes(fixed[20:30], (removed & tracked)[20:30]))
+    assert payload["sides"][6, 0] == 0 and payload["sides"][6, 1] == 2
+    meta = read_meta(tmp_path)
+
+    def array(key):
+        import base64
+        return np.frombuffer(base64.b64decode(meta["fixed"][key]), dtype=np.uint8)
+    np.testing.assert_array_equal(array("n_moved"), (tracked & (fixed != ["H", "A", "A"])).sum(1))
+    np.testing.assert_array_equal(array("n_removed"), (tracked & removed).sum(1))
+    assert array("n_home")[21] == 2 and array("n_away")[21] == 1
+    assert array("n_home")[26] == 0 and array("n_away")[26] == 2   # slot 1 removed
+
+
+def test_without_fixed_sides_the_page_has_nothing_to_switch(tmp_path):
+    write(tmp_path)
+    _, payload = viz.read_chunk_js((tmp_path / "chunks" / "c0002.js").read_text())
+    assert "sides" not in payload and read_meta(tmp_path)["fixed"] is None
+
+
+@needs_node
+def test_the_page_reads_raw_and_fixed_sides(tmp_path):
+    write_with_fixed_sides(tmp_path)
+    script = """
+      const [core, metaPath, chunkPath] = process.argv.slice(1);
+      const Core = require(core);
+      const meta = JSON.parse(require("fs").readFileSync(metaPath, "utf8")
+                              .replace("window.VIEWER_META = ", "").replace(/;\\s*$/, ""));
+      let chunk = null;
+      global.viewerChunk = (index, payload) => { chunk = Core.decodeChunk(payload); };
+      require(chunkPath);
+      const out = {};
+      for (const frame of [21, 26, 28]) {
+        out[frame] = [0, 1, 2].map(s => Core.side(chunk, meta, frame, s, false) +
+                                         (Core.side(chunk, meta, frame, s, true) || "-"));
+      }
+      console.log(JSON.stringify(out));
+    """
+    out = run_node(script, os.path.join(viz.PAGE_DIR, "core.js"), str(tmp_path / "meta.js"),
+                   str(tmp_path / "chunks" / "c0002.js"))
+    assert out == {"21": ["HH", "AA", "AH"], "26": ["H-", "AA", "AA"], "28": ["HH", "AA", "AA"]}

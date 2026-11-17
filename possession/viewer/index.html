@@ -16,6 +16,11 @@
     <button data-view="video">Video</button>
     <button data-view="pitch">Pitch</button>
   </span>
+  <span class="group" id="sideButtons" hidden
+        title="Which tracking to show (key S): the raw ATD, or ours after the fixes (positions held off camera or stuck removed, keepers put on the right side). A white ring marks a slot whose side we changed; in Raw ATD, a dashed red ring marks a position we remove.">
+    <button data-sides="raw">Raw ATD</button>
+    <button data-sides="fixed" class="on">Cleaned</button>
+  </span>
   <label><input type="checkbox" id="optOverlay" checked> Overlay</label>
   <label><input type="checkbox" id="optNumbers"> Slot numbers</label>
   <label><input type="checkbox" id="optLines"> Pitch lines</label>
@@ -82,7 +87,7 @@
     <span class="spacer"></span>
     <label class="dim" title="Shift the video against the data if the overlay runs early or late">
       Video offset <input type="number" id="videoOffset" value="0" step="1"> frames</label>
-    <span class="dim small">space · ←/→ frame · shift ←/→ second</span>
+    <span class="dim small">space · ←/→ frame · shift ←/→ second · S raw / cleaned</span>
   </div>
   <canvas id="detail"></canvas>
   <canvas id="overview"></canvas>
