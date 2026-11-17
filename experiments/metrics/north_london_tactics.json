@@ -1,5 +1,5 @@
 {
-  "dead_ball_share": 0.3553,
+  "dead_ball_share": 0.4239,
   "experiment": "north_london_tactics",
   "graded_frames": 158857,
   "halves": [
@@ -8,39 +8,39 @@
       "first": 11185,
       "half": 1,
       "last": 90651,
-      "n_spells": 185
+      "n_spells": 165
     },
     {
       "all_x": false,
       "first": 110808,
       "half": 2,
       "last": 190197,
-      "n_spells": 223
+      "n_spells": 184
     }
   ],
-  "home_share": 0.6036,
-  "label_changes_per_min": 5.1745,
+  "home_share": 0.613,
+  "label_changes_per_min": 4.4191,
   "label_share": {
-    "A": 0.2556,
-    "D": 0.3553,
-    "H": 0.3891,
+    "A": 0.2229,
+    "D": 0.4239,
+    "H": 0.3532,
     "X": 0.0
   },
-  "n_spells": 408,
-  "short_spell_share": 0.0662,
+  "n_spells": 349,
+  "short_spell_share": 0.0802,
   "smart_tagging": {
-    "agreement": 0.8137,
+    "agreement": 0.8145,
     "coverage": 0.4978
   },
   "spell_length_s": {
-    "max": 69.6,
-    "mean": 10.0407,
-    "median": 4.98,
+    "max": 61.24,
+    "mean": 10.4897,
+    "median": 5.76,
     "min": 0.2,
-    "p10": 1.2,
-    "p90": 26.508
+    "p10": 1.192,
+    "p90": 27.848
   },
-  "spells_per_min": 3.8525,
+  "spells_per_min": 3.2954,
   "thresholds": {
     "dead_ball_share": [
       0.2,
