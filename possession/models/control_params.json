@@ -1,0 +1,15 @@
+{
+ "about": "control confidence scales, tuned by scripts/tune_controls.py on the bench's training matches (ADR 0003)",
+ "params": {
+  "prox_zero": 1.1955074990823025,
+  "prox_one": 0.6883547748178626,
+  "sep_zero": -0.971046816101638,
+  "sep_one": 4.0,
+  "dwell_zero": 1.2727799510761733,
+  "dwell_one": 3.793522684588793,
+  "together_zero": 7.632191847337265,
+  "together_one": 0.07223651449962856,
+  "impulse_zero": 0.0,
+  "impulse_one": 17.322484340515686
+ }
+}

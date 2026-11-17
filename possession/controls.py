@@ -14,7 +14,8 @@ tracked ball and within REACH. Each episode gets a few rule scores in [0, 1] and
   confidence = prox * sep * max(dwell * together, impulse)
 
 Everything is from tracking only, so the same code runs on BAR-ATH and on the bench. The scales
-are hand-set, not fitted; scripts/control_probe.py measures how well they rank.
+are HAND by default; scripts/tune_controls.py tunes them on the bench's training matches
+(possession/models/control_params.json), and scripts/control_probe.py measures how well they rank.
 """
 
 import numpy as np
@@ -24,6 +25,11 @@ REACH = 2.5        # metres: a looser net than hmm_touch's; the scores do the so
 MERGE = 2          # frames: a break this short in the same player's run does not end the episode
 VEL_LAG = 2        # frames either side for a velocity
 IMPULSE_LAG = 3    # frames either side for a change of velocity
+
+# The hand-set scales: each score is 0 at `_zero` and 1 at `_one`, linear between.
+HAND = {"prox_zero": REACH, "prox_one": 0.5, "sep_zero": -0.5, "sep_one": 1.5,
+        "dwell_zero": 1.0, "dwell_one": 0.4 * FPS, "together_zero": 4.0, "together_one": 1.0,
+        "impulse_zero": 2.0, "impulse_one": 8.0}
 
 FIELDS = ("start", "end", "track", "side", "dmin", "margin", "frames", "rel_speed", "impulse",
           "prox", "sep", "dwell", "together", "impulse_score", "confidence")
@@ -61,7 +67,7 @@ def nearest(match):
     return np.where(seen, j, -1), np.where(seen, dmin, np.nan), np.where(seen, other, np.nan)
 
 
-def episodes(match):
+def episodes(match, params=None):
     """The control episodes of a match as a dict of arrays (keys FIELDS), sorted by start."""
     from possession.team_shape import blocks_of
     blocks = blocks_of(match)
@@ -109,15 +115,35 @@ def episodes(match):
         w = jump[max(a - k, 0):b + k + 1]
         out["impulse"].append(float(np.nanmax(w)) if np.isfinite(w).any() else 0.0)
     ep = {f: np.array(v) for f, v in out.items() if v}
-    ep["prox"] = _ramp(ep["dmin"], REACH, 0.5)
-    ep["sep"] = _ramp(ep["margin"], -0.5, 1.5)
-    ep["dwell"] = _ramp(ep["frames"], 1, 0.4 * FPS)
-    ep["together"] = np.nan_to_num(_ramp(ep["rel_speed"], 4.0, 1.0))
-    ep["impulse_score"] = _ramp(ep["impulse"], 2.0, 8.0)
+    return score(ep, params)
+
+
+def score(ep, params=None):
+    """Fill in the rule scores and the confidence of episodes, with `params` (default HAND)."""
+    p = dict(HAND)
+    p.update(params or {})
+    if len(ep.get("start", ())) == 0:
+        return ep
+    ep["prox"] = _ramp(ep["dmin"], p["prox_zero"], p["prox_one"])
+    ep["sep"] = _ramp(ep["margin"], p["sep_zero"], p["sep_one"])
+    ep["dwell"] = _ramp(ep["frames"], p["dwell_zero"], p["dwell_one"])
+    ep["together"] = np.nan_to_num(_ramp(ep["rel_speed"], p["together_zero"], p["together_one"]))
+    ep["impulse_score"] = _ramp(ep["impulse"], p["impulse_zero"], p["impulse_one"])
     ep["confidence"] = ep["prox"] * ep["sep"] * np.maximum(ep["dwell"] * ep["together"],
                                                            ep["impulse_score"])
     return ep
 
+
+def side_outcome(ep, labels, after=12):
+    """Per episode, against a full ground truth: 1 if the side in possession over the `after` frames
+    following its end is the controller's, 0 if the other side, -1 if those frames are all dead."""
+    n = len(labels)
+    out = np.empty(len(ep.get("start", ())), dtype=int)
+    for i, (e, s) in enumerate(zip(ep["end"], ep["side"])):
+        lab = labels[e:min(e + after, n)]
+        lab = lab[lab != "D"]
+        out[i] = -1 if len(lab) == 0 else int((lab == s).mean() >= 0.5)
+    return out
 
 def hmm_touch_rule(ep, reach, margin):
     """Which episodes hmm_touch's yes/no rule would count as a control (it is per frame; an episode
