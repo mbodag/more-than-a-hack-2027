@@ -128,7 +128,10 @@ def alive_features(match, path=ALIVE_PATH):
 
 # Features and models -----------------------------------------------------------------------------
 
-def make_features(conf=True, alive=True, clean=True, alive_path=ALIVE_PATH):
+def make_features(conf=True, alive=True, clean=True, alive_path=ALIVE_PATH, extra=()):
+    """hmm_combo's feature function. Each group can be switched off; `extra` is a tuple of more
+    sources, each match -> (X, names), appended last (e.g. dead-ball evidence from elsewhere, in
+    place of or next to P(alive))."""
     def features(match):
         tracked = clean_view(match) if clean else match
         X, names = hmm_touch_ms.features(tracked)
@@ -141,6 +144,10 @@ def make_features(conf=True, alive=True, clean=True, alive_path=ALIVE_PATH):
             A, anames = alive_features(match, alive_path)
             parts.append(A)
             names += anames
+        for source in extra:
+            E, enames = source(match)
+            parts.append(E)
+            names += tuple(enames)
         return np.nan_to_num(np.column_stack(parts)), names
     return features
 
