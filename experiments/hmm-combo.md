@@ -59,6 +59,26 @@ Ahead of `hmm_final_ms` on all six match-and-seed pairs, by 0.008 to 0.032. On B
 possessions (408), median 4.64 s, dead share 40.6% (35.5%), Smart Tagging agreement **0.837**
 (0.814).
 
+## `hmm_combo_final_islands`: plus the dead-island rule, test run once
+
+`hmm_combo_final`, then `hmm.drop_dead_islands` at 3 s (75 frames, set by hand in
+`dead-islands.md`): play under 3 s between two stoppages becomes dead ball. Nothing refitted.
+
+| | bench **test** spellF1 | macroF1 | BAR-ATH possessions | median | dead share | ST agreement |
+|---|---|---|---|---|---|---|
+| `hmm_combo_final` | **0.515** | **0.870** | 353 | 4.64 s | 40.6% | **0.837** |
+| `hmm_combo_final_islands` | 0.512 | 0.869 | 327 | 5.08 s | 41.2% | 0.836 |
+
+The rule costs 0.003 on test (0.000-0.004 per match and seed), as on train: the bench has few long
+breaks, so it can only show the cost. On BAR-ATH it removes 26 short possessions, mostly inside
+long breaks, without changing the agreement. A draw the bench cannot settle.
+
+## Swapping the dead-ball evidence
+
+`hmm_combo.make_features(alive=..., extra=(...))`: P(alive) can be switched off and other evidence
+appended (each source: match -> (X, names)). Anything appended must exist on the bench matches too,
+or the HMM cannot learn its weight.
+
 ## Verdict
 
 - `hmm_combo_final`: the strongest candidate, on validation and on the single test run. Replacing
