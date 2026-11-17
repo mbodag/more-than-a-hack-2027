@@ -1,0 +1,43 @@
+{
+  "val": {
+    "macro_f1": 0.89401370628788,
+    "per_match": [
+      {
+        "alive_dead_f1": 1.0,
+        "degraded": "v2/seed0",
+        "macro_f1": 0.8956149966593991,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 317.0,
+        "spell_f1_mean": 0.5288486416558862,
+        "team_acc_both_alive": 0.8434312980101198
+      },
+      {
+        "alive_dead_f1": 1.0,
+        "degraded": "v2/seed1",
+        "macro_f1": 0.8950706582393182,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 344.0,
+        "spell_f1_mean": 0.5265000000000001,
+        "team_acc_both_alive": 0.8426185669716593
+      },
+      {
+        "alive_dead_f1": 1.0,
+        "degraded": "v2/seed2",
+        "macro_f1": 0.8913554639649227,
+        "match": "J03WOY",
+        "n_gt_spells": 456.0,
+        "n_pred_spells": 333.0,
+        "spell_f1_mean": 0.49784537389100125,
+        "team_acc_both_alive": 0.83728338096112
+      }
+    ],
+    "regime": "degraded v2 seeds [0, 1, 2]",
+    "settings": {
+      "base": "hmm_touch"
+    },
+    "spell_f1_mean": 0.5177313385156291,
+    "split": "val"
+  }
+}
