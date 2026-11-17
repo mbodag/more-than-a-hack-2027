@@ -23,8 +23,8 @@ graded frames) we have to read the players. The features come from the tracking 
 - each team's nearest player to the ball, and the margin between them;
 - the ball's speed, and whether it is beyond a line;
 - the team shape: where each side's players are and how they are spread;
-- control evidence (a player within 2 m of the ball and clearly closer than any opponent),
-  averaged over half a second and two seconds;
+- control evidence (a player within 2 m of the ball and at least a metre closer to it than any
+  opponent), averaged over half a second and two seconds;
 - how long the ball has been missing, and which side was nearest at each end of the gap;
 - most importantly, **which side last controlled the ball before this frame and which side next
   controls it after**, and how long ago and how soon. Possession stays with the side that last
@@ -32,8 +32,8 @@ graded frames) we have to read the players. The features come from the tracking 
   strongest single cue. The whole match is available when we label it, so looking ahead is fair.
 
 **2. A hidden Markov model over three states, H, A and D.** The probabilities above become emission
-scores, and Viterbi decoding finds the most likely sequence for each half on its own. Every change of
-state has a cost, learnt from how often possession changes and how often play stops on the
+scores, and Viterbi decoding finds the most likely sequence for each half on its own. Every change
+of state has a cost, learnt from how often possession changes and how often play stops on the
 training matches. So a single frame where an Athletic player is nearest the ball doesn't hand them
 possession; the evidence has to hold up for a while. We also make every stoppage last at least
 4 seconds (100 frames), because short false stoppages were splitting real possessions in two.
@@ -66,8 +66,8 @@ after it becomes dead ball.
 small neural network instead of logistic regression, separate weights for hidden-ball frames, a
 rule for who restarts after a stoppage, windowed team movement, hand-built feature combinations,
 and a dedicated stoppage model. None beat this one by more than the noise on our validation match,
-so we kept the simplest. The HMM itself was the big step: on our bench it took spellF1 from 0.18
-for the smoothed baseline to 0.34, and the last-touch features took it to 0.45.
+so we kept the simplest. The HMM itself was the big step: on our validation match it took spellF1
+from 0.18 for the smoothed baseline to 0.34, and the last-touch features took it to 0.45.
 
 ## Assets: what we used and what we dropped
 
@@ -115,14 +115,14 @@ per-frame definitions from the training matches, so where the line falls on a lo
 challenge is, in the first place, the DFL's. On top of that, the decoder adds:
 
 - **Loose balls and challenges:** possession stays with the side that last controlled the ball
-  until the other side's evidence holds up. A deflection, a block or a 50/50 that doesn't end in a
-  control by the other team doesn't change possession.
+  until the other side's evidence holds up. So a deflection, a block or a 50/50 that doesn't end in
+  a control by the other team usually doesn't change possession.
 - **Flicker:** every change of state costs something, so brief touches and contested balls don't
   break a possession into pieces.
 - **Stoppages:** at least 4 seconds. Anything shorter is absorbed into the possession around it.
-- **Restarts:** a set piece is a stoppage up to the moment the ball is played again, and the team
-  taking it is favoured for the first 5 seconds after. Throw-ins have no team in Smart Tagging, so
-  there the tracking alone decides who has the ball after the restart.
+- **Restarts:** the decoder is pushed towards calling a set piece dead up to the moment the ball is
+  played again, and towards the team taking it for the first 5 seconds after. Throw-ins have no
+  team in Smart Tagging, so there the tracking alone decides who has the ball after the restart.
 - **Breaks in play:** a possession can't be shorter than 3 seconds if there's a stoppage on both
   sides of it.
 - **Abstaining:** we never do. Every graded frame gets `H`, `A` or `D`.
@@ -137,8 +137,8 @@ challenge is, in the first place, the DFL's. On top of that, the decoder adds:
 
 The bench has no Smart Tagging, so there the set-piece layer does nothing, and the 3-second rule
 makes no measurable difference either: the bench matches have few long breaks. So the bench says
-the extra layers do no harm, and nothing about whether they help on this match. On Barcelona v Athletic we can only check things that
-don't need labels:
+the extra layers do no harm, and nothing about whether they help on this match. On Barcelona v
+Athletic we can only check things that don't need labels:
 
 | | layers 1–2 | + set pieces | submitted (+ 3 s rule) |
 |---|---|---|---|
@@ -156,7 +156,7 @@ set-piece layer isn't marking its own homework there.
 ## Limitations
 
 - **The set-piece layer is unmeasured.** We have no labelled match with Smart Tagging, so we can't
-  say how much it helps, only that it moves the label-free checks in the right direction. A stand-in
+  say how much it helps, only that it raises the agreement with Smart Tagging's phases. A stand-in
   version of Smart Tagging built from the bench matches' own set-piece events would let us fit and
   test it properly. We got as far as building one, but not as far as running this method on it.
 - **Restart timing is rough.** Smart Tagging's set-piece windows are long (around 35 s) and start a
@@ -169,10 +169,12 @@ set-piece layer isn't marking its own homework there.
   the Bundesliga data we train on gives km/h, and this match's ATD gives roughly 0.19 × m/s. So our
   model sees this match's ball as moving much more slowly than it really is. We found this late. A
   version that recomputes speed from the ball's positions scored 0.497 on our bench test against
-  0.479, which is within the bench's noise. We submitted the version we had examined most closely.
-- **Open-play turnovers are where most of the remaining error is.** On the bench, giving our model
-  the true dead balls would lift spellF1 by about 0.07; giving it the true sides would lift it by
-  about 0.39. Short possessions, and most are under 10 s, are often missed or merged.
+  0.479, a gap the bench can't reliably separate from noise. We submitted the set-piece version on
+  the older model because it's the one we had studied most, in the viewer and in the label-free
+  checks; fixing the units is the first thing we'd do next.
+- **Open-play turnovers are where most of the remaining error is.** On our validation match, giving
+  our model the true dead balls would lift spellF1 by about 0.07; giving it the true sides would
+  lift it by about 0.39. Short possessions, and most are under 10 s, are often missed or merged.
 - **The labels are the DFL's.** If the organisers draw the line differently on loose balls or
   restarts, we inherit the difference.
 - **The bench only imitates the ATD.** We copy its ball gaps and broken tracks, but not every habit.
