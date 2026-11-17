@@ -142,6 +142,10 @@ adds on top:
 - **A stoppage lasts at least 4 s** (`dead_min` 100 frames): shorter dead stretches are absorbed
   into the possession around them. Restarts start a new possession for whichever side the evidence
   then favours.
+- **No possession shorter than 3 s between two stoppages** (`hmm_combo_islands`, `island_min` 75
+  frames): a brief spell of play with dead ball on both sides becomes dead ball. It targets long
+  breaks (cooling breaks, injuries), where the decoder otherwise invents a moment of possession,
+  and is set by hand: the bench has few such breaks and scores it a draw.
 - **We never abstain**: every graded frame gets `H`, `A` or `D`; any `X` inside a half is filled
   from the labels around it, never across halftime.
 
