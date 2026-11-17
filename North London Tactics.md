@@ -140,12 +140,15 @@ makes no measurable difference either: the bench matches have few long breaks. S
 the extra layers do no harm, and nothing about whether they help on this match. On Barcelona v Athletic we can only check things that
 don't need labels:
 
-| | layers 1–2 | submitted |
-|---|---|---|
-| possessions | 384 | see `experiments/metrics/north_london_tactics.json` |
-| share of frames dead | 40.3% | |
-| possessions under 1 s | 8.1% | |
-| agreement with Smart Tagging's in-possession phases | 0.803 | |
+| | layers 1–2 | + set pieces | submitted (+ 3 s rule) |
+|---|---|---|---|
+| possessions | 384 | 377 | 349 |
+| share of frames dead | 40.3% | 41.7% | 42.4% |
+| possessions under 1 s | 8.1% | 8.5% | 8.0% |
+| agreement with Smart Tagging's in-possession phases | 0.803 | 0.815 | 0.815 |
+
+The 3-second rule removes 28 possessions, all of them short stretches of play between two
+stoppages.
 
 The agreement check uses Smart Tagging's build-up and attacking phases, not the set pieces, so the
 set-piece layer isn't marking its own homework there.
