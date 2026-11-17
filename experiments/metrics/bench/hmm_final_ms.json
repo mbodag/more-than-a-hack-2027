@@ -1,0 +1,76 @@
+{
+  "test": {
+    "macro_f1": 0.8604415020465029,
+    "per_match": [
+      {
+        "alive_dead_f1": 0.959147098581556,
+        "degraded": "v2/seed0",
+        "macro_f1": 0.8687802413690568,
+        "match": "J03WPY",
+        "n_gt_spells": 421.0,
+        "n_pred_spells": 283.0,
+        "spell_f1_mean": 0.5039772727272727,
+        "team_acc_both_alive": 0.878974555194184
+      },
+      {
+        "alive_dead_f1": 0.9474553405284704,
+        "degraded": "v2/seed0",
+        "macro_f1": 0.8614196320261498,
+        "match": "J03WR9",
+        "n_gt_spells": 370.0,
+        "n_pred_spells": 302.0,
+        "spell_f1_mean": 0.49107142857142855,
+        "team_acc_both_alive": 0.8845407900228316
+      },
+      {
+        "alive_dead_f1": 0.9540071639172495,
+        "degraded": "v2/seed1",
+        "macro_f1": 0.8565642607386188,
+        "match": "J03WPY",
+        "n_gt_spells": 421.0,
+        "n_pred_spells": 300.0,
+        "spell_f1_mean": 0.49264909847434113,
+        "team_acc_both_alive": 0.8696729371799292
+      },
+      {
+        "alive_dead_f1": 0.9420224091591329,
+        "degraded": "v2/seed1",
+        "macro_f1": 0.8600719420040664,
+        "match": "J03WR9",
+        "n_gt_spells": 370.0,
+        "n_pred_spells": 277.0,
+        "spell_f1_mean": 0.4908809891808346,
+        "team_acc_both_alive": 0.8910256410256411
+      },
+      {
+        "alive_dead_f1": 0.9425124720978739,
+        "degraded": "v2/seed2",
+        "macro_f1": 0.8424974850473825,
+        "match": "J03WPY",
+        "n_gt_spells": 421.0,
+        "n_pred_spells": 305.0,
+        "spell_f1_mean": 0.4677685950413224,
+        "team_acc_both_alive": 0.8628833958845606
+      },
+      {
+        "alive_dead_f1": 0.9524778020547626,
+        "degraded": "v2/seed2",
+        "macro_f1": 0.8733154510937439,
+        "match": "J03WR9",
+        "n_gt_spells": 370.0,
+        "n_pred_spells": 302.0,
+        "spell_f1_mean": 0.5345238095238095,
+        "team_acc_both_alive": 0.8957110609480813
+      }
+    ],
+    "regime": "degraded v2 seeds [0, 1, 2]",
+    "settings": {
+      "dead": 1.0,
+      "dead_min": 100,
+      "switch": 0.5,
+      "w": 0.7
+    },
+    "spell_f1_mean": 0.4968118655865015,
+    "split": "test"
+  }
+}
