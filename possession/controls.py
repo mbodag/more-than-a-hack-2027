@@ -63,7 +63,8 @@ def nearest(match):
 
 def episodes(match):
     """The control episodes of a match as a dict of arrays (keys FIELDS), sorted by start."""
-    blocks = match.blocks
+    from possession.team_shape import blocks_of
+    blocks = blocks_of(match)
     ball = np.asarray(match.ball_xy, dtype=np.float32)
     tracks = np.asarray(match.track_xy, dtype=np.float32)
     side_of = np.asarray(match.track_team_fixed)
@@ -78,9 +79,10 @@ def episodes(match):
     jump[k:n - k] = np.linalg.norm(vb[2 * k:] - vb[:n - 2 * k], axis=1)
 
     candidate = (j >= 0) & (d <= REACH)
-    block_of = np.zeros(n, dtype=int)
+    block_of = np.full(n, -1)
     for i, (a, b) in enumerate(blocks):
         block_of[a:b + 1] = i
+    candidate &= block_of >= 0          # nothing outside the halves (BAR-ATH's pre-match, half-time)
 
     out = {f: [] for f in FIELDS}
     idx = np.flatnonzero(candidate)
